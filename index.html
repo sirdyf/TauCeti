@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - materials - anisotropic texture filtering</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				color: #000;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+
+				background-color: rgb(50,50,50);
+				margin: 0px;
+				padding: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+				z-index:100;
+			}
+
+			.lbl { color:#fff; font-size:16px; font-weight:bold; position: absolute; bottom:0px; z-index:100; text-shadow:#000 1px 1px 1px; background-color:rgba(0,0,0,0.85); padding:1em }
+			#lbl_left { text-align:left; left:0px }
+			#lbl_right { text-align:left; right:0px }
+
+			.g { color:#aaa }
+			.c { color:#fa0 }
+
+			a { color:red }
+
+			#stats { position: absolute; top:0; left: 0 }
+			#stats #fps { background: transparent !important }
+			#stats #fps #fpsText { color: #777 !important }
+			#stats #fps #fpsGraph { display: none }
+		</style>
+	</head>
+
+	<body>
+		<div id="info">
+			<a> Dark World </a>
+		</div>
+
+		<div id="lbl_left" class="lbl">
+		anisotropy: <span class="c" id="val_left"></span><br/>
+		</div>
+
+		<div id="lbl_right" class="lbl">
+		anisotropy: <span class="c" id="val_right"></span><br/>
+		</div>
+
+
+		<script id="vertexShader" type="x-shader/x-vertex">
+                    
+                    varying vec2 vUv;
+                    //varying vec4 v_color;
+
+                    void main() {
+                        vUv = uv;
+                        //v_color = vec4(0.0, 0.0, 1.0, 0.1);
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+                    }
+                    
+		</script>
+
+                <script id="fragment_shader" type="x-shader/x-fragment">
+
+                    uniform vec2 uOffset;
+                    uniform sampler2D tDiffuse;
+                    uniform float opacity;
+
+                    uniform vec3 fogColor;
+                    uniform float fogNear;
+                    uniform float fogFar;
+
+                    varying vec2 vUv;
+
+                    vec2 uRepeatOverlay = vec2( 32, 32);
+
+                    void main() {
+                        
+                        gl_FragColor = texture2D( tDiffuse, uRepeatOverlay * vUv + uOffset);
+                        
+                        float depth = gl_FragCoord.z / gl_FragCoord.w;
+
+                        float fogFactor = smoothstep( fogNear, fogFar, depth );
+                        gl_FragColor = mix( gl_FragColor, vec4( fogColor, gl_FragColor.w ), fogFactor );
+                        gl_FragColor.w = opacity;
+                                                
+                        //gl_FragColor = vec4(vec3( 1.0 ), 0.1); // RGBA
+                        //gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0); // RGBA
+                        //gl_FragColor.w = 0.1;
+                    }
+                    
+		</script>
+            
+                <script src="libs/three.js"></script>
+
+		<script src="libs/Detector.js"></script>
+		<script src="libs/stats.min.js"></script>
+		<script src="controls.js"></script>
+		<script src="terrain.js"></script>
+		<script src="laser.js"></script>
+		<script src="init.js"></script>
+
+	</body>
+</html>

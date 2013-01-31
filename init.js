@@ -90,7 +90,7 @@ function init() {
         for(var i=0; i< 20; i++) {
             
             loader = new THREE.JSONLoader();
-            loader.load( 'model/fabric.js', function ( geometry ) {
+            loader.load( 'model/fabric.json', function ( geometry ) {
 
                     meterial_g = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: true } );
 

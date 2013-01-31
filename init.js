@@ -52,7 +52,7 @@ function init() {
         for( var i=1 ; i <= 70; i++) {
             var pointLight = new THREE.PointLight( 'rgb(0,250,0)', 1.0, 1000 );
             pointLight.position.set( Math.sin(i) * 500, i - 8, Math.cos(i) * 500 - 150 );
-            scene.add( pointLight );  
+            //scene.add( pointLight );  
             
             PoingLight.push(pointLight);
 

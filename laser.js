@@ -1,6 +1,6 @@
 function laser(scene, camera)  {
 
-    var speed = 100;
+    var speed = 5;
     var dist  = 0;
 
     var material = new THREE.MeshLambertMaterial( { 
@@ -23,7 +23,8 @@ function laser(scene, camera)  {
     var geometry = new THREE.PlaneGeometry( 1, 30 );
     
     //var mesh = new THREE.Mesh( geometry, material );
-    var mesh = new THREE.Mesh( new THREE.SphereGeometry( 1.7, 7, 7 ), material );
+    var mesh = new THREE.Mesh( new THREE.SphereGeometry( 0.1, 7, 7 ), material );
+    mesh.scale.z = 50;
     
     //mesh.matrix.copy(camera.matrix);
     //mesh.matrixAutoUpdate = true;
@@ -60,19 +61,20 @@ function laser(scene, camera)  {
     
     mesh.update = function (dt) {
             
-            dist += 1;
+            dist += speed;
             //mesh.translate(dist, dir);
+            
             //mesh.updateMatrix();
-            mesh.position.x += dir.x;
-            mesh.position.z += dir.z;
+            mesh.position.x += dir.x * speed;
+            mesh.position.z += dir.z * speed;
             //pointLight.position.z = mesh.position.z;
             
             //var vec = new THREE.Vector3();
             //vec.getRotationFromMatrix(mesh.matrixRotationWorld);
             
-            document.getElementById( "val_right" ).innerHTML = dir.x + " : " + dir.y + " : " + dir.z;
+            document.getElementById( "val_right" ).innerHTML = mesh.position.distanceTo(camera.position);
             
-            if (camera.position.distanceToSquared(mesh.position) > 100000) {
+            if ( mesh.position.distanceTo(camera.position) > 500 ) {
                 
                 //mesh.remove(sphere);
                 //mesh.remove(pointLight);

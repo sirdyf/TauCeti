@@ -141,6 +141,8 @@ THREE.PointerLockControls = function ( camera ) {
 
 	};
 
+	this.test = function(){}
+
 	this.update = function ( delta ) {
 
 		if ( scope.enabled === false ) return;

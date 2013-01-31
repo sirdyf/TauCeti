@@ -1,0 +1,54 @@
+THREE.PointerLockControls = function ( camera ) {
+
+        this.enabled = false;
+        
+        var keys = new Array(255);
+        var targetPos;
+        var cameraPos;
+        
+        this.phi   = 0;
+        this.theta = 0;
+        
+        targetPos = new THREE.Vector3( 0, 0, -500 );
+        cameraPos    = new THREE.Vector3( 0, 15, 0 ); 
+
+	var onKeyDown = function ( event ) {
+		keys[event.keyCode] = true;
+	};
+
+	var onKeyUp = function ( event ) {
+		keys[event.keyCode] = false;
+	};
+
+	document.addEventListener( 'keydown', onKeyDown, false );
+	document.addEventListener( 'keyup', onKeyUp, false );
+
+	this.update = function ( delta ) {
+
+		if ( this.enabled === false ) return;
+        
+                this.phi   = 0;
+                this.theta = 0;
+                
+                if( keys[38] ) cameraPos.z -= 1; // Up
+                if( keys[40] ) cameraPos.z += 1; // Down
+                if( keys[37] ) cameraPos.x -= 1; // Left
+                if( keys[39] ) cameraPos.x += 1; // Right
+
+                if( keys[87] ) cameraPos.z -= 1; // w
+                if( keys[83] ) cameraPos.z += 1; // s
+                if( keys[65] ) this.phi = 1; // a
+                if( keys[68] ) this.phi = -1; // d
+
+                document.getElementById( "val_right" ).innerHTML = camera.position.z;
+
+                targetPos.x = 100 * Math.sin( this.phi ) * Math.cos( this.theta );
+		//targetPos.y = 100 * Math.cos( this.phi );
+		targetPos.z = 100 * Math.sin( this.phi ) * Math.sin( this.theta );
+                
+                camera.position.set( cameraPos.x, cameraPos.y, cameraPos.z );
+                camera.lookAt( targetPos );
+
+	};
+
+};

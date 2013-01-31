@@ -5,7 +5,7 @@ var SCREEN_HEIGHT = window.innerHeight;
 
 var container,stats;
 
-var camera, scene, renderer, geometry, terrain;
+var camera, scene, renderer, geometry, terrain, meterial_g;
 
 var num = 0;
 
@@ -16,6 +16,7 @@ var windowHalfY = window.innerHeight / 2;
 var controls, time = Date.now();
 var clock = new THREE.Clock();
 
+var PoingLight = [];
 
 init();
 animate();
@@ -48,18 +49,21 @@ function init() {
         directionalLight.position.set( 500, 2000, 0 );
         scene.add( directionalLight );
 
-//        for( var i=1 ; i <= 70; i++) {
-//            var pointLight = new THREE.PointLight( 'rgb(0,250,0)', 0.3 * 10 );
-//            //pointLight.position.set( Math.sin(i) * 30, i - 8, Math.cos(i) * 30 - 150 );
-//            scene.add( pointLight );        
-//        }        
+        for( var i=1 ; i <= 70; i++) {
+            var pointLight = new THREE.PointLight( 'rgb(0,250,0)', 1.0, 1000 );
+            pointLight.position.set( Math.sin(i) * 500, i - 8, Math.cos(i) * 500 - 150 );
+            scene.add( pointLight );  
+            
+            PoingLight.push(pointLight);
 
-//        var mat = new THREE.MeshLambertMaterial( { shading: THREE.FlatShading } );
-//        sphere = new THREE.Mesh( new THREE.SphereGeometry( 0.7, 7, 7 ), mat );
-//        sphere.position.x = Math.sin(i) * 30;
-//        sphere.position.y = i - 8;
-//        sphere.position.z = Math.cos(i) * 30 - 150;
-//        scene.add( sphere );
+            var mat = new THREE.MeshLambertMaterial( { shading: THREE.FlatShading } );
+            sphere = new THREE.Mesh( new THREE.SphereGeometry( 0.7, 7, 7 ), mat );
+            sphere.position.x = Math.sin(i) * 500;
+            sphere.position.y = i - 8;
+            sphere.position.z = Math.cos(i) * 500 - 150;
+            scene.add( sphere );
+
+        }        
 
         var maxAnisotropy = renderer.getMaxAnisotropy();
         
@@ -83,20 +87,26 @@ function init() {
         sphere.position.x = -50;
         scene.add( sphere );
         
-        loader = new THREE.JSONLoader();
-        loader.load( 'model/fabric.js', function ( geometry ) {
+        for(var i=0; i< 20; i++) {
+            
+            loader = new THREE.JSONLoader();
+            loader.load( 'model/fabric.js', function ( geometry ) {
 
-                mesh1 = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: true } ) );
-                mesh1.position.z = -150;
-                scene.add( mesh1 );
+                    meterial_g = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: true } );
 
-                mesh2 = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: true } ) );
-                mesh2.rotation.x = Math.PI;
-                mesh2.position.z = -150;
-                scene.add( mesh2 );
+                    mesh1 = new THREE.Mesh( geometry, meterial_g );
+                    mesh1.position.x = Math.random() * 1000 - 500;
+                    mesh1.position.z = Math.random() * 1000 - 500;;
+                    scene.add( mesh1 );
 
-        } );
+                    mesh2 = new THREE.Mesh( geometry, meterial_g );
+                    mesh2.rotation.x = Math.PI;
+                    mesh2.position.x = mesh1.position.x;
+                    mesh2.position.z = mesh1.position.z;
+                    scene.add( mesh2 );
 
+            } );
+        }
 
         // RENDERER
 
@@ -116,17 +126,6 @@ function init() {
         scene.add( controls.getObject() );
         controls.enabled = true;
 
-        laser1 = new laser(scene, controls.getObject());
-//        laser2 = new laser(scene, controls.getObject());
-
-        var onKeyDownMain=function  ( event ) {
-            if (event.keyCode === 32){ // Пробел
-                var ll= new laser(scene, controls.getObject());
-		ll.update(1);
-            }
-        };
-    
-        document.addEventListener( 'keydown', onKeyDownMain, false );
 };
 
 function animate() {
@@ -141,6 +140,7 @@ function animate() {
 function render() {
 
         var delta_time = clock.getDelta();
+        
         renderer.clear();
 
         controls.update( delta_time * 100);
@@ -156,9 +156,25 @@ function render() {
              }
          }
 
-        //document.getElementById( "val_right" ).innerHTML = mouseX;
+        //document.getElementById( "val_right" ).innerHTML = PoingLight[0].distance;
 
         renderer.render( scene, camera );
 	time = Date.now();
 
+}
+
+var onKeyDownMain=function  ( event ) {
+    if (event.keyCode === 32){ // Пробел
+        
+        laser(scene, controls.getObject());
+        // meterial_g.needsUpdate = true;
+        
+        //for(l in PoingLight){
+        //    PoingLight[l].distance = 0;
+        //    PoingLight[l].enabled = false;
+        //}
+    
+    }
 };
+
+document.addEventListener( 'keydown', onKeyDownMain, false );

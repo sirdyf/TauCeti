@@ -31,46 +31,60 @@ function terrain(scene, anisotropy)  {
         scene.add( mesh );
 
 
-//        var texture2 = THREE.ImageUtils.loadTexture( "textures/242381_tumannost_zvezdy_planety_svet_1920x1200_(www.GdeFon.ru).jpg" );
-        //texture2.repeat.set( 12, 12 );
-        //texture2.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        var texture2 = THREE.ImageUtils.loadTexture( "textures/stars-texture.jpg" );
+        texture2.repeat.set( 48, 32 );
+        texture2.wrapS = texture2.wrapT = THREE.RepeatWrapping;
         //texture2.anisotropy = 0; //Anisotropy;
-        
+       
+        var material2 = new THREE.MeshBasicMaterial( {
+            color: 'rgb(180,180,200)',
+            overdraw: true,
+            side: THREE.DoubleSide,
+            fog: false,
+            wireframe: false,
+            map: texture2
+        })
+            
 //        var material2 = new THREE.MeshLambertMaterial( { 
 //            //alphaTest: 0.5,
-//            shading: THREE.FlatShading,
-//            overdraw: true,
+//            //shading: THREE.FlatShading,
+//            //overdraw: true,
 //            //wireframe: true,
 //            //wireframeLinewidth: 2,
-//            reflectivity: 0.3,
-//            emissive: 0x111111,
-//            shiness: 10,
-//            color: 'rgb(255,255,255)', 
+//            //reflectivity: 0.3,
+//            //emissive: 0x111111,
+//            //shiness: 10,
+//            //color: 'rgb(255,255,255)', 
 //            map: texture2, 
 //            fog: false, 
-//            transparent: false, 
-//            wrapAround: true, 
+//            //transparent: false, 
+//            //wrapAround: true, 
 //            side: THREE.DoubleSide,
-//            opacity: 1.0
+//            //opacity: 1.0
 //        } );
-//
-//        var geometry2 = new THREE.CylinderGeometry( 1000, 1000, 30, 20, 1 );
-//        var mesh2 = new THREE.Mesh( geometry2, material2 );
-//
-//        //mesh2.position.z = -30;
-//        mesh2.position.y = -5;
-//        scene.add( mesh2 );
-	
-        var mapA = THREE.ImageUtils.loadTexture( "textures/metal_1_8_512.jpg" );
-        
-	var scaleX = 100; mapA.image.width;
-        var scaleY = 100; mapA.image.height;
 
-        var materialA1 = new THREE.SpriteMaterial( { map: mapA, useScreenCoordinates: false, alignment: THREE.SpriteAlignment.topLeft, opacity: 1.0, fog: true } );
-       	sprite = new THREE.Sprite( materialA1 );
-        sprite.position.set( 0, 0, 0 );
-        sprite.scale.set( scaleX, scaleY, 1 );
-        scene.add( sprite );
+        //var geometry2 = new THREE.CylinderGeometry( 1000, 1000, 30, 20, 1 );
+        var geometry2 = new THREE.SphereGeometry( 1000, 8, 6 );
+        var mesh2 = new THREE.Mesh( geometry2, material2 );
+
+        //mesh2.position.z = -30;
+        mesh2.position.y = -5;
+        scene.add( mesh2 );
+	
+//        var mapA = THREE.ImageUtils.loadTexture( "textures/stars.jpg" );
+//        mapA.repeat.set( 8, 8 );
+//        mapA.wrapS = mapA.wrapT = THREE.RepeatWrapping;
+//        //mapA.anisotropy = 0; //Anisotropy;
+//        
+//        
+//	var scaleX = SCREEN_WIDTH;  mapA.image.width;
+//        var scaleY = SCREEN_HEIGHT; mapA.image.height;
+//
+//        var materialA1 = new THREE.SpriteMaterial( { map: mapA, useScreenCoordinates: true, alignment: THREE.SpriteAlignment.topLeft, opacity: 0.2, fog: false } );
+//       	sprite = new THREE.Sprite( materialA1 );
+//        sprite.position.set( 0, 0, 0 );
+//        sprite.scale.set( scaleX, scaleY, 1 );
+//        scene.add( sprite );
 
         this.update = function update(cam) {
             
@@ -82,6 +96,9 @@ function terrain(scene, anisotropy)  {
 
             mesh.position.x = cam.position.x;
             mesh.position.z = cam.position.z;
+            
+            mesh2.position.x = cam.position.x;
+            mesh2.position.z = cam.position.z;
             
         }
 }

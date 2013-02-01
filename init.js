@@ -143,7 +143,7 @@ function render() {
         
         renderer.clear();
 
-        controls.update( delta_time * 100);
+        controls.update( delta_time * 10);
         terrain.update(controls.getObject());
         
         mouseX = 0;

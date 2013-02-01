@@ -24,7 +24,7 @@ THREE.PointerLockControls = function ( camera ) {
 	
         var rotateYaw  = new THREE.Vector3();
 	
-        var velocityYaw  = 0.016;
+        var velocityYaw  = 0;
 
 	var PI_2 = Math.PI / 2;
 
@@ -141,52 +141,50 @@ THREE.PointerLockControls = function ( camera ) {
 
 	};
 
-	this.test = function(){}
+	this.test = function(){};
 
-	this.update = function ( delta ) {
+var speedMax=10;//максимальная скорость
+var accelStop=0.08;//ускорение торможения
+var accelMove=0.12;//ускорение движения
+var accelYawMove=0.0016;//ускорение вращения
+var accelYawStop=0.08;
+//var speedYawMax=0.016;
 
-		if ( scope.enabled === false ) return;
+var yawObject_position_y = 3; 
 
-		delta *= 0.1;
+        this.update = function ( delta ) {//delta is "delta time"
 
-                rotateYaw.z += ( - rotateYaw.z ) * velocityYaw * delta;
+            if ( scope.enabled === false ) return;
+// торможения
+            velocity.x  += ( - velocity.x ) * accelStop * delta; // уменьшение скорости = торможение X
+            velocity.z  += ( - velocity.z ) * accelStop * delta; // уменьшение скорости = торможение Z
+            velocityYaw += (-velocityYaw)*accelYawStop*delta;
 
-                if ( rotateYawCW )  rotateYaw.y -= velocityYaw;
-		if ( rotateYawСCW ) rotateYaw.y += velocityYaw;
+// ускорения
+            if ( moveForward ) velocity.z -= accelMove * delta; // увеличение скорости = движение вперёд
+            if ( moveBackward ) velocity.z += accelMove * delta;
 
-                if ( rotateYawCW )  rotateYaw.z += velocityYaw * delta / 5;
-		if ( rotateYawСCW ) rotateYaw.z -= velocityYaw * delta / 5;
+            if ( moveLeft ) velocity.x -= accelMove * delta;// увеличение скорости = движение влево
+            if ( moveRight ) velocity.x += accelMove * delta;
+// фактические изменения конечных величин
 
-                velocity.x += ( - velocity.x ) * 0.08 * delta;
-		velocity.z += ( - velocity.z ) * 0.08 * delta;
-//		velocity.y -= 0.25 * delta;
+                rotateYaw.z += ( - rotateYaw.z ) * 0.016 * delta*2;
+                if ( rotateYawCW )  {velocityYaw -= accelYawMove*delta;}
+		if ( rotateYawСCW ) {velocityYaw += accelYawMove*delta;}//rotateYaw.y += velocityYaw;}
+  //         if (Math.abs(velocityYaw)>speedYawMax){
+  //              velocityYaw=speedYawMax*Math.sign(velocityYaw);
+  //          }
+rotateYaw.y+= velocityYaw;
+                if ( rotateYawCW )  rotateYaw.z += 0.016 * delta / 2;
+		if ( rotateYawСCW ) rotateYaw.z -= 0.016 * delta / 2;
 
-		if ( moveForward ) velocity.z -= 0.12 * delta;
-		if ( moveBackward ) velocity.z += 0.12 * delta;
+            yawObject.rotation.y  = rotateYaw.y;
+            yawObject.rotation.z  = rotateYaw.z;
 
-		if ( moveLeft ) velocity.x -= 0.12 * delta;
-		if ( moveRight ) velocity.x += 0.12 * delta;
-
-//		if ( isOnObject === true ) {
-//			velocity.y = Math.max( 0, velocity.y );
-//		}
-
-                yawObject.rotation.y  = rotateYaw.y;
-                yawObject.rotation.z  = rotateYaw.z;
-               
-		yawObject.translateX( velocity.x );
-		yawObject.translateY( velocity.y ); 
-		yawObject.translateZ( velocity.z );
-
-//                if ( yawObject.position.y < 3 ) {
-//
-//			velocity.y = 0;
-			yawObject.position.y = 3;
-//
-//			canJump = true;
-//
-//		}
-
+            yawObject.translateX( velocity.x );
+            yawObject.translateZ( velocity.z );
+		
+            yawObject.position.y = yawObject_position_y;
 	};
 
 };

@@ -23,14 +23,15 @@ function laser(scene, camera)  {
     var geometry = new THREE.PlaneGeometry( 1, 30 );
     
     //var mesh = new THREE.Mesh( geometry, material );
-    var mesh = new THREE.Mesh( new THREE.SphereGeometry( 0.1, 7, 7 ), material );
+    //var mesh = new THREE.Mesh( new THREE.SphereGeometry( 0.1, 7, 7 ), material );
+    var mesh = new THREE.Mesh( new THREE.CubeGeometry( 0.1, 0.1, 1.0 ), material );
     mesh.scale.z = 50;
     
     //mesh.matrix.copy(camera.matrix);
     //mesh.matrixAutoUpdate = true;
     //mesh.matrixWorldNeedsUpdate = true;
     
-    //mesh.rotation.y = camera.rotation.y;
+    mesh.rotation.y = camera.rotation.y;
     //mesh.rotation.z = camera.rotation.z;
     //mesh.rotation.x = camera.rotation.x;
     //mesh.rotation.z = - Math.PI / 2;
@@ -50,6 +51,12 @@ function laser(scene, camera)  {
     //mesh.updateMatrix();
 
     scene.add( mesh );
+    
+    var pl = PointLight.getLight();
+    pl.distance = 100;
+    pl.intensity = 1;
+    
+    mesh.add(pl);
 
 //    var pointLight = new THREE.PointLight( 'rgb(0,250,0)', 0.3);
 //    pointLight.position.y = 3;
@@ -74,7 +81,7 @@ function laser(scene, camera)  {
             
             document.getElementById( "val_right" ).innerHTML = mesh.position.distanceTo(camera.position);
             
-            if ( mesh.position.distanceTo(camera.position) > 500 ) {
+            if ( mesh.position.distanceTo(camera.position) > 1000 ) {
                 
                 //mesh.remove(sphere);
                 //mesh.remove(pointLight);
@@ -83,6 +90,9 @@ function laser(scene, camera)  {
                 
                 scene.remove(mesh);
 
+                pl.distance  = 0;
+                pl.intensity = 0;
+                
                 // clean up
                 //mesh.dispose();
                 //geometry.dispose();

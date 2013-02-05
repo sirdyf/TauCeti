@@ -1,6 +1,6 @@
 function laser(scene, camera)  {
 
-    var speed = 5;
+    var speed = 10;
     var dist  = 0;
 
     var material = new THREE.MeshLambertMaterial( {
@@ -25,7 +25,7 @@ function laser(scene, camera)  {
     //var mesh = new THREE.Mesh( geometry, material );
     //var mesh = new THREE.Mesh( new THREE.SphereGeometry( 0.1, 7, 7 ), material );
     var mesh = new THREE.Mesh( new THREE.CubeGeometry( 0.1, 0.1, 1.0 ), material );
-    mesh.scale.z = 50;
+    mesh.scale.z = 300;
 
     //mesh.matrix.copy(camera.matrix);
     //mesh.matrixAutoUpdate = true;
@@ -69,6 +69,8 @@ function laser(scene, camera)  {
     mesh.update = function (dt) {
 
             dist += speed;
+            pl.position.y = 5;
+                    
             //mesh.translate(dist, dir);
 
             //mesh.updateMatrix();

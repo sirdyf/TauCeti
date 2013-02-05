@@ -18,6 +18,8 @@ var windowHalfY = window.innerHeight / 2;
 var controls, time = Date.now();
 var clock = new THREE.Clock();
 
+var composer, effectFXAA;
+
 init();
 animate();
 
@@ -107,13 +109,34 @@ function init() {
         controls = new THREE.PointerLockControls( camera );
         scene.add( controls.getObject() );
         controls.enabled = true;
+        
+
+        var renderModel = new THREE.RenderPass( scene, camera );
+        var effectBloom = new THREE.BloomPass( 1.2 );
+        var effectCopy  = new THREE.ShaderPass( THREE.CopyShader );
+
+        effectFXAA = new THREE.ShaderPass( THREE.FXAAShader );
+
+        var width = window.innerWidth || 2;
+        var height = window.innerHeight || 2;
+
+        effectFXAA.uniforms[ 'resolution' ].value.set( 1 / width, 1 / height );
+
+        effectCopy.renderToScreen = true;
+
+        composer = new THREE.EffectComposer( renderer );
+
+        composer.addPass( renderModel );
+        //composer.addPass( effectFXAA );
+        //composer.addPass( effectBloom );
+        composer.addPass( effectCopy );
+
 
 };
 
 function animate() {
 
         requestAnimationFrame( animate );
-
         render();
         stats.update();
 
@@ -140,7 +163,11 @@ function render() {
 
         //document.getElementById( "val_right" ).innerHTML = PoingLight[0].distance;
 
-        renderer.render( scene, camera );
+        // renderer.render( scene, camera );
+        
+	renderer.clear();
+        composer.render();
+
 	time = Date.now();
 
 }

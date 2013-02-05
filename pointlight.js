@@ -12,6 +12,16 @@ function pointlight(scene)  {
     }
 
     this.getLight = function() {
+
+        var c = 0; 
+        for( var i=0 ; i <= maxLight; i++) {
+            if(plArray[i].distance === 0) {
+                c ++;
+            }
+        }
+        
+        document.getElementById( "val_right" ).innerHTML = c;
+
         for( var i=0 ; i <= maxLight; i++) {
             if(plArray[i].distance === 0) {
                 return plArray[i];

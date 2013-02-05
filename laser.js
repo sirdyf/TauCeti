@@ -1,9 +1,9 @@
 function laser(scene, camera)  {
 
-    var speed = 100;
+    var speed = 10;
     var dist  = 0;
 
-    var material = new THREE.MeshLambertMaterial( { 
+    var material = new THREE.MeshLambertMaterial( {
         //alphaTest: 0.5,
         shading: THREE.FlatShading,
         //overdraw: true,
@@ -12,24 +12,26 @@ function laser(scene, camera)  {
         //reflectivity: 0.3,
         emissive: 'rgb(255,255,255)',
         //shiness: 10,
-        color: 'rgb(255,255,255)', 
-        //map: texture, 
-        //transparent: true, 
-        //wrapAround: true, 
+        color: 'rgb(255,255,255)',
+        //map: texture,
+        //transparent: true,
+        //wrapAround: true,
         //opacity: 0.95
         fog: true
     } );
 
     var geometry = new THREE.PlaneGeometry( 1, 30 );
-    
+
     //var mesh = new THREE.Mesh( geometry, material );
-    var mesh = new THREE.Mesh( new THREE.SphereGeometry( 1.7, 7, 7 ), material );
-    
+    //var mesh = new THREE.Mesh( new THREE.SphereGeometry( 0.1, 7, 7 ), material );
+    var mesh = new THREE.Mesh( new THREE.CubeGeometry( 0.1, 0.1, 1.0 ), material );
+    mesh.scale.z = 300;
+
     //mesh.matrix.copy(camera.matrix);
     //mesh.matrixAutoUpdate = true;
     //mesh.matrixWorldNeedsUpdate = true;
-    
-    //mesh.rotation.y = camera.rotation.y;
+
+    mesh.rotation.y = camera.rotation.y;
     //mesh.rotation.z = camera.rotation.z;
     //mesh.rotation.x = camera.rotation.x;
     //mesh.rotation.z = - Math.PI / 2;
@@ -38,11 +40,11 @@ function laser(scene, camera)  {
     dir = camera.localToWorld(new THREE.Vector3(0, 0, 1));
     dir.sub(camera.position, dir);
     dir.normalize();
-    
+
     mesh.position.x = camera.position.x;
     mesh.position.y = 1;
     mesh.position.z = camera.position.z;
-    
+
     mesh.name = 'laser';
     //mesh.matrixAutoUpdate = true;
     //mesh.rotationAutoUpdate = true;
@@ -50,36 +52,48 @@ function laser(scene, camera)  {
 
     scene.add( mesh );
 
+    var pl = PointLight.getLight();
+    pl.distance = 300;
+    pl.intensity = 1;
+
+    mesh.add(pl);
+
 //    var pointLight = new THREE.PointLight( 'rgb(0,250,0)', 0.3);
 //    pointLight.position.y = 3;
 //    mesh.add(pointLight);
-    
+
 //    var mat = new THREE.MeshLambertMaterial( { shading: THREE.FlatShading } );
 //    var sphere = new THREE.Mesh( new THREE.SphereGeometry( 0.7, 7, 7 ), mat );
 //    mesh.add(sphere);
-    
+
     mesh.update = function (dt) {
-            
-            dist += 1;
+
+            dist += speed;
+            pl.position.y = 5;
+                    
             //mesh.translate(dist, dir);
+
             //mesh.updateMatrix();
-            mesh.position.x += dir.x;
-            mesh.position.z += dir.z;
+            mesh.position.x += dir.x * speed;
+            mesh.position.z += dir.z * speed;
             //pointLight.position.z = mesh.position.z;
-            
+
             //var vec = new THREE.Vector3();
             //vec.getRotationFromMatrix(mesh.matrixRotationWorld);
-            
-            document.getElementById( "val_right" ).innerHTML = dir.x + " : " + dir.y + " : " + dir.z;
-            
-            if (camera.position.distanceToSquared(mesh.position) > 100000) {
-                
+
+            //document.getElementById( "val_right" ).innerHTML = mesh.position.distanceTo(camera.position);
+
+            if ( mesh.position.distanceTo(camera.position) > 1000 ) {
+
                 //mesh.remove(sphere);
                 //mesh.remove(pointLight);
-                
+
                 delete mesh.update;
-                
+
                 scene.remove(mesh);
+
+                pl.distance  = 0;
+                pl.intensity = 0;
 
                 // clean up
                 //mesh.dispose();

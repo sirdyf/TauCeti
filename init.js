@@ -7,6 +7,8 @@ var container,stats;
 
 var camera, scene, renderer, geometry, terrain, meterial_g;
 
+var PointLight;
+
 var num = 0;
 
 var mouseX = 0, mouseY = 0;
@@ -16,7 +18,7 @@ var windowHalfY = window.innerHeight / 2;
 var controls, time = Date.now();
 var clock = new THREE.Clock();
 
-var PoingLight = [];
+var composer, effectFXAA;
 
 init();
 animate();
@@ -32,7 +34,7 @@ function init() {
         camera.position.z = 0;
 
         scene = new THREE.Scene();
-
+        PointLight = new pointlight(scene);
         scene.add( camera );
 	
         scene.fog = new THREE.FogExp2( 0x050510, 0.0025 );
@@ -41,29 +43,11 @@ function init() {
 
         scene.add( new THREE.AmbientLight( 'rgb(5,5,20)' ) );
 
-        // LIGHTS
-
         //scene.add( new THREE.AmbientLight( 0x111111 ) );
 
         directionalLight = new THREE.DirectionalLight( 0xffffff, 1.15 );
         directionalLight.position.set( 500, 2000, 0 );
         scene.add( directionalLight );
-
-        for( var i=1 ; i <= 70; i++) {
-            var pointLight = new THREE.PointLight( 'rgb(0,250,0)', 1.0, 1000 );
-            pointLight.position.set( Math.sin(i) * 500, i - 8, Math.cos(i) * 500 - 150 );
-            scene.add( pointLight );  
-            
-            PoingLight.push(pointLight);
-
-            var mat = new THREE.MeshLambertMaterial( { shading: THREE.FlatShading } );
-            sphere = new THREE.Mesh( new THREE.SphereGeometry( 0.7, 7, 7 ), mat );
-            sphere.position.x = Math.sin(i) * 500;
-            sphere.position.y = i - 8;
-            sphere.position.z = Math.cos(i) * 500 - 150;
-            scene.add( sphere );
-
-        }        
 
         var maxAnisotropy = renderer.getMaxAnisotropy();
         
@@ -80,7 +64,7 @@ function init() {
         
         terrain = new terrain(scene, maxAnisotropy);
         
-        var mat = new THREE.MeshLambertMaterial( { shading: THREE.FlatShading } );
+        var mat = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: true } );
         sphere = new THREE.Mesh( new THREE.SphereGeometry( 20, 20, 10 ), mat );
         //sphere.scale.set( 10, 10, 10 );
         sphere.position.z = -150;
@@ -125,13 +109,34 @@ function init() {
         controls = new THREE.PointerLockControls( camera );
         scene.add( controls.getObject() );
         controls.enabled = true;
+        
+
+        var renderModel = new THREE.RenderPass( scene, camera );
+        var effectBloom = new THREE.BloomPass( 1.2 );
+        var effectCopy  = new THREE.ShaderPass( THREE.CopyShader );
+
+        effectFXAA = new THREE.ShaderPass( THREE.FXAAShader );
+
+        var width = window.innerWidth || 2;
+        var height = window.innerHeight || 2;
+
+        effectFXAA.uniforms[ 'resolution' ].value.set( 1 / width, 1 / height );
+
+        effectCopy.renderToScreen = true;
+
+        composer = new THREE.EffectComposer( renderer );
+
+        composer.addPass( renderModel );
+        //composer.addPass( effectFXAA );
+        //composer.addPass( effectBloom );
+        composer.addPass( effectCopy );
+
 
 };
 
 function animate() {
 
         requestAnimationFrame( animate );
-
         render();
         stats.update();
 
@@ -158,12 +163,16 @@ function render() {
 
         //document.getElementById( "val_right" ).innerHTML = PoingLight[0].distance;
 
-        renderer.render( scene, camera );
+        // renderer.render( scene, camera );
+        
+	renderer.clear();
+        composer.render();
+
 	time = Date.now();
 
 }
 
-var onKeyDownMain=function  ( event ) {
+var onKeyDownMain = function ( event ) {
     if (event.keyCode === 32){ // Пробел
         
         laser(scene, controls.getObject());

@@ -9,22 +9,22 @@ function terrain(scene, anisotropy)  {
         
         var material = new THREE.MeshLambertMaterial( { 
             //alphaTest: 0.5,
-            shading: THREE.FlatShading,
-            overdraw: true,
+            //shading: THREE.FlatShading,
+            //overdraw: true,
             //wireframe: true,
             //wireframeLinewidth: 2,
-            reflectivity: 0.3,
-            emissive: 0x111111,
-            shiness: 10,
+            //reflectivity: 0.3,
+            //emissive: 0x111111,
+            //shiness: 10,
             color: 'rgb(5,5,30)', 
             map: texture, 
             fog: true, 
             transparent: true, 
-            wrapAround: true, 
-            opacity: 0.95
+            //wrapAround: true, 
+            opacity: 0.85
         } );
 
-        var geometry = new THREE.PlaneGeometry( 1400, 1400, 0, 0 );
+        var geometry = new THREE.PlaneGeometry( 1400, 1400, 30, 30 );
 
         var mesh = new THREE.Mesh( geometry, material );
         mesh.rotation.x = - Math.PI / 2;

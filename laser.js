@@ -1,11 +1,9 @@
-
-//myLaser = 
-laser = function (camera)  {
+laser = function(camera) {
     var speed = 100;
 
-    var dist  = 0;
+    var dist = 0;
 
-    var material = new THREE.MeshLambertMaterial( {
+    var material = new THREE.MeshLambertMaterial({
         //alphaTest: 0.5,
         shading: THREE.FlatShading,
         //overdraw: true,
@@ -20,44 +18,27 @@ laser = function (camera)  {
         //wrapAround: true,
         //opacity: 0.95
         fog: true
-    } );
-    var tst=0;//!!!
-var tst2;
-    var geometry = new THREE.PlaneGeometry( 1, 30 );
+    });
 
-    //var mesh = new THREE.Mesh( geometry, material );
-    //var mesh = new THREE.Mesh( new THREE.SphereGeometry( 0.1, 7, 7 ), material );
-    var mesh = new THREE.Mesh( new THREE.CubeGeometry( 0.1, 0.1, 1.0 ), material );
+    var geometry = new THREE.PlaneGeometry(1, 30);
+
+    var mesh = new THREE.Mesh(new THREE.CubeGeometry(0.1, 0.1, 1.0), material);
     mesh.scale.z = 300;
 
-    //mesh.matrix.copy(camera.matrix);
-    //mesh.matrixAutoUpdate = true;
-    //mesh.matrixWorldNeedsUpdate = true;
 
     mesh.rotation.y = camera.rotation.y;
-    //mesh.rotation.z = camera.rotation.z;
-    //mesh.rotation.x = camera.rotation.x;
-    //mesh.rotation.z = - Math.PI / 2;
 
     var dir = new THREE.Vector3();
 
-    
-//    this.Fire = function(camera){
-        dir = camera.localToWorld(new THREE.Vector3(0, 0, 1));
-        dir.sub(camera.position, dir);
-        dir.normalize();
+    dir = camera.localToWorld(new THREE.Vector3(0, 0, 1));
+    dir.sub(camera.position, dir);
+    dir.normalize();
 
-        mesh.position.x = camera.position.x;
-        mesh.position.y = 1;
-        mesh.position.z = camera.position.z;
+    mesh.position.x = camera.position.x;
+    mesh.position.y = 1;
+    mesh.position.z = camera.position.z;
 
-        mesh.name = 'laser';
-
-    //mesh.matrixAutoUpdate = true;
-    //mesh.rotationAutoUpdate = true;
-    //mesh.updateMatrix();
-
-    //scene_obj.add( mesh ); //!!!!!!!!!!!!!
+    mesh.name = 'laser';
 
     var pl = PointLight.getLight();
     pl.distance = 300;
@@ -65,56 +46,20 @@ var tst2;
 
     mesh.add(pl);
 
-//    var pointLight = new THREE.PointLight( 'rgb(0,250,0)', 0.3);
-//    pointLight.position.y = 3;
-//    mesh.add(pointLight);
+    var lScene = this;
+    mesh.update = function(dt) {
+        dist += speed;
+        pl.position.y = 5;
 
-//    var mat = new THREE.MeshLambertMaterial( { shading: THREE.FlatShading } );
-//    var sphere = new THREE.Mesh( new THREE.SphereGeometry( 0.7, 7, 7 ), mat );
-//    mesh.add(sphere);
+        mesh.position.x += dir.x * speed;
+        mesh.position.z += dir.z * speed;
+        //document.getElementById( "val_right" ).innerHTML = mesh.position.distanceTo(camera.position);
 
-    mesh.update = function (dt) {
-
-            dist += speed;
-            pl.position.y = 5;
-                    
-            //mesh.translate(dist, dir);
-
-            //mesh.updateMatrix();
-            mesh.position.x += dir.x * speed;
-            mesh.position.z += dir.z * speed;
-            //pointLight.position.z = mesh.position.z;
-
-            //var vec = new THREE.Vector3();
-            //vec.getRotationFromMatrix(mesh.matrixRotationWorld);
-
-            //document.getElementById( "val_right" ).innerHTML = mesh.position.distanceTo(camera.position);
-
-            if ( mesh.position.distanceTo(camera.position) > 1000 ) {
-
-                //mesh.remove(sphere);
-                //mesh.remove(pointLight);
-
-                delete mesh.update;
-
-
-                this.remove(mesh);
-
-                
-                //scene.remove(mesh); //!!!!!!!!!!!!
-
-
-                pl.distance  = 0;
-                pl.intensity = 0;
-
-                // clean up
-                //mesh.dispose();
-                //geometry.dispose();
-                //material.dispose();
-                //texture.dispose();
-
-            }
+        if (mesh.position.distanceTo(camera.position) > 1000) {
+            pl.distance = 0;
+            pl.intensity = 0;
+            lScene.remove(mesh);
+        }
     };
-    this.add(mesh);//!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- //};
-}
+    this.add(mesh);
+};

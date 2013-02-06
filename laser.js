@@ -1,6 +1,8 @@
-function laser(scene, camera)  {
 
-    var speed = 10;
+//myLaser = 
+laser = function (camera)  {
+    var speed = 100;
+
     var dist  = 0;
 
     var material = new THREE.MeshLambertMaterial( {
@@ -37,20 +39,24 @@ function laser(scene, camera)  {
     //mesh.rotation.z = - Math.PI / 2;
 
     var dir = new THREE.Vector3();
-    dir = camera.localToWorld(new THREE.Vector3(0, 0, 1));
-    dir.sub(camera.position, dir);
-    dir.normalize();
 
-    mesh.position.x = camera.position.x;
-    mesh.position.y = 1;
-    mesh.position.z = camera.position.z;
+    
+//    this.Fire = function(camera){
+        dir = camera.localToWorld(new THREE.Vector3(0, 0, 1));
+        dir.sub(camera.position, dir);
+        dir.normalize();
 
-    mesh.name = 'laser';
+        mesh.position.x = camera.position.x;
+        mesh.position.y = 1;
+        mesh.position.z = camera.position.z;
+
+        mesh.name = 'laser';
+
     //mesh.matrixAutoUpdate = true;
     //mesh.rotationAutoUpdate = true;
     //mesh.updateMatrix();
 
-    scene.add( mesh );
+    //scene_obj.add( mesh ); //!!!!!!!!!!!!!
 
     var pl = PointLight.getLight();
     pl.distance = 300;
@@ -90,7 +96,12 @@ function laser(scene, camera)  {
 
                 delete mesh.update;
 
-                scene.remove(mesh);
+
+                this.remove(mesh);
+
+                
+                //scene.remove(mesh); //!!!!!!!!!!!!
+
 
                 pl.distance  = 0;
                 pl.intensity = 0;
@@ -103,4 +114,6 @@ function laser(scene, camera)  {
 
             }
     };
+    this.add(mesh);//!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ //};
 }

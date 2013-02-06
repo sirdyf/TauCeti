@@ -34,7 +34,9 @@ function init() {
         camera.position.z = 0;
 
         scene = new THREE.Scene();
+
         PointLight = new pointlight(scene);
+
         scene.add( camera );
 	
         scene.fog = new THREE.FogExp2( 0x050510, 0.0025 );
@@ -132,6 +134,17 @@ function init() {
         composer.addPass( effectCopy );
 
 
+//        scene.fire = {
+//            
+//            laser: function(){
+//                myLaser(this,controls.getObject());
+//            }
+//        };
+//    scene.fireLaser = function(){
+//        var tt=new myLaser();
+//        myLaser(this,controls.getObject());
+//    };
+    scene.fireLaser=laser;
 };
 
 function animate() {
@@ -175,7 +188,10 @@ function render() {
 var onKeyDownMain = function ( event ) {
     if (event.keyCode === 32){ // Пробел
         
-        laser(scene, controls.getObject());
+        //scene.fire.laser();
+        //
+        scene.fireLaser(controls.getObject());
+        
         // meterial_g.needsUpdate = true;
         
         //for(l in PoingLight){

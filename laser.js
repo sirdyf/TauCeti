@@ -21,7 +21,8 @@ laser = function (camera)  {
         //opacity: 0.95
         fog: true
     } );
-
+    var tst=0;//!!!
+var tst2;
     var geometry = new THREE.PlaneGeometry( 1, 30 );
 
     //var mesh = new THREE.Mesh( geometry, material );

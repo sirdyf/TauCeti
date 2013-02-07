@@ -9,6 +9,8 @@ THREE.PointerLockControls = function ( camera ) {
 	var yawObject = new THREE.Object3D();
 	//yawObject.position.y = 10;
 	yawObject.add( camera );
+        yawObject.boundRadius=10;
+
 
         var moveForward     = false;
 	var moveBackward    = false;
@@ -140,19 +142,25 @@ THREE.PointerLockControls = function ( camera ) {
 		canJump = boolean;
 
 	};
+        
+        var impValue=0;
+        var impDir=0;
+        
+   this.SetImpulse = function( value, dir){
+            impValue=value;
+            impDir=dir;
+        };
+        
+    var speedMax=10;//максимальная скорость
+    var accelStop=0.08;//ускорение торможения
+    var accelMove=0.12;//ускорение движения
+    var accelYawMove=0.0016;//ускорение вращения
+    var accelYawStop=0.08;
+    //var speedYawMax=0.016;
 
-	this.test = function(){};
+    var yawObject_position_y = 3; 
 
-var speedMax=10;//максимальная скорость
-var accelStop=0.08;//ускорение торможения
-var accelMove=0.12;//ускорение движения
-var accelYawMove=0.0016;//ускорение вращения
-var accelYawStop=0.08;
-//var speedYawMax=0.016;
-
-var yawObject_position_y = 3; 
-
-        this.update = function ( delta ) {//delta is "delta time"
+    this.update = function ( delta ) {//delta is "delta time"
 
             if ( scope.enabled === false ) return;
 // торможения

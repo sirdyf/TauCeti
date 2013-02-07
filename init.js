@@ -24,14 +24,14 @@ init();
 animate();
 
 function init() {
-
+this.init=true;
         container = document.createElement( 'div' );
         document.body.appendChild( container );
 
         renderer = new THREE.WebGLRenderer( { antialias: true } );
 
         camera = new THREE.PerspectiveCamera( 35, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 2500 );
-        camera.position.z = 0;
+        camera.position.z = 1;
 
         scene = new THREE.Scene();
 
@@ -71,6 +71,7 @@ function init() {
         //sphere.scale.set( 10, 10, 10 );
         sphere.position.z = -150;
         sphere.position.x = -50;
+        sphere.geometry.boundingSphere.radius=20;
         scene.add( sphere );
         
         for(var i=0; i< 20; i++) {
@@ -82,13 +83,15 @@ function init() {
 
                     mesh1 = new THREE.Mesh( geometry, meterial_g );
                     mesh1.position.x = Math.random() * 1000 - 500;
-                    mesh1.position.z = Math.random() * 1000 - 500;;
+                    mesh1.position.z = Math.random() * 1000 - 500;
+                    mesh1.geometry.boundingSphere.radius=10;
                     scene.add( mesh1 );
 
                     mesh2 = new THREE.Mesh( geometry, meterial_g );
                     mesh2.rotation.x = Math.PI;
                     mesh2.position.x = mesh1.position.x;
                     mesh2.position.z = mesh1.position.z;
+                    mesh1.geometry.boundingSphere.radius=10;
                     scene.add( mesh2 );
 
             } );
@@ -169,6 +172,7 @@ function render() {
         for(var index in scene.children) {
             mouseX += 1;
             var object = scene.children[index];
+            CheckCollisionWithCamera(object);
             if ("update" in object){
                 object.update( delta_time );
              }
@@ -184,6 +188,21 @@ function render() {
 	time = Date.now();
 
 }
+function CheckCollisionWithCamera(obj){
+    if (obj.geometry && obj.geometry.boundingSphere.radius<100){// instanceof THREE.Mesh){
+        var objSize=20;
+        if (obj.position.distanceTo(camera.parent.position)<20){//distanceToSquared//фактическая позиция камеры не меняется!
+        //mesh1.geometry.boundingSphere.radius=10;
+            camera.parent.position.x=0;
+            camera.parent.position.y=0;
+            camera.parent.position.z=0;
+        }
+    }
+}
+//.boundingBox
+//Bounding box.
+//{ min: new THREE.Vector3(), max: new THREE.Vector3() }
+//.boundingSphere
 
 var onKeyDownMain = function ( event ) {
     if (event.keyCode === 32){ // Пробел

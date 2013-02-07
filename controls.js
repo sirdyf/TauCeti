@@ -22,7 +22,7 @@ THREE.PointerLockControls = function ( camera ) {
 	var isOnObject = false;
 	var canJump    = false;
 
-	var velocity     = new THREE.Vector3();
+	velocity     = new THREE.Vector3();
 	
         var rotateYaw  = new THREE.Vector3();
 	
@@ -143,12 +143,23 @@ THREE.PointerLockControls = function ( camera ) {
 
 	};
         
-        var impValue=0;
-        var impDir=0;
-        
-   this.SetImpulse = function( value, dir){
-            impValue=value;
-            impDir=dir;
+        var impAngleValue=0;
+
+        this.GetVelocity = function(){
+            return velocity;
+        }
+   this.SetImpulse = function( angleValue){
+            impAngleValue=angleValue;
+
+//************
+//var vector = new THREE.Vector3( 1, 0, 0 );
+
+var axis = new THREE.Vector3( 0, 1, 0 );
+//var angle = Math.PI / 2;
+var matrixRot = new THREE.Matrix4().makeRotationAxis( axis, angleValue );
+
+matrixRot.multiplyVector3( velocity );
+//************
         };
         
     var speedMax=10;//максимальная скорость
@@ -182,7 +193,7 @@ THREE.PointerLockControls = function ( camera ) {
   //         if (Math.abs(velocityYaw)>speedYawMax){
   //              velocityYaw=speedYawMax*Math.sign(velocityYaw);
   //          }
-rotateYaw.y+= velocityYaw;
+            rotateYaw.y+= velocityYaw;
                 if ( rotateYawCW )  rotateYaw.z += 0.016 * delta / 2;
 		if ( rotateYawСCW ) rotateYaw.z -= 0.016 * delta / 2;
 

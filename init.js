@@ -71,7 +71,7 @@ this.init=true;
         //sphere.scale.set( 10, 10, 10 );
         sphere.position.z = -150;
         sphere.position.x = -50;
-        sphere.geometry.boundingSphere.radius=20;
+        //sphere.geometry.boundingSphere.radius=20;
         scene.add( sphere );
         
         for(var i=0; i< 20; i++) {
@@ -91,7 +91,7 @@ this.init=true;
                     mesh2.rotation.x = Math.PI;
                     mesh2.position.x = mesh1.position.x;
                     mesh2.position.z = mesh1.position.z;
-                    mesh1.geometry.boundingSphere.radius=10;
+                    //mesh1.geometry.boundingSphere.radius=10;
                     scene.add( mesh2 );
 
             } );
@@ -158,10 +158,11 @@ function animate() {
 
 };
 
+        var sumdeltaD=0;
 function render() {
 
         var delta_time = clock.getDelta();
-        
+        sumdeltaD+=1;
         renderer.clear();
 
         controls.update( delta_time * 10);
@@ -172,13 +173,18 @@ function render() {
         for(var index in scene.children) {
             mouseX += 1;
             var object = scene.children[index];
-            CheckCollisionWithCamera(object);
+            if (true){//sumdeltaD > 10){
+                CheckCollisionWithCamera(object);
+           }
             if ("update" in object){
                 object.update( delta_time );
              }
          }
+            if (sumdeltaD > 10){
+                sumdeltaD=0;
+            }
 
-        //document.getElementById( "val_right" ).innerHTML = PoingLight[0].distance;
+        //document.getElementById( "val_right" ).innerHTML = sumdelta;
 
         // renderer.render( scene, camera );
         
@@ -188,15 +194,31 @@ function render() {
 	time = Date.now();
 
 }
+
 function CheckCollisionWithCamera(obj){
+       
     if (obj.geometry && obj.geometry.boundingSphere.radius<100){// instanceof THREE.Mesh){
-        var objSize=20;
-        if (obj.position.distanceTo(camera.parent.position)<20){//distanceToSquared//фактическая позиция камеры не меняется!
-        //mesh1.geometry.boundingSphere.radius=10;
-            camera.parent.position.x=0;
-            camera.parent.position.y=0;
-            camera.parent.position.z=0;
+        var objAndCameraSize=obj.geometry.boundingSphere.radius+camera.parent.boundRadius;
+        if (obj.position.distanceTo(camera.parent.position)<objAndCameraSize){//distanceToSquared//фактическая позиция камеры не меняется!
+        var vRadius=new THREE.Vector3();
+        vRadius.sub(obj.position,camera.parent.position);
+        //vRadius.addScalar(-obj.geometry.boundingSphere.radius);
+        vRadius.normalize();
+    
+    var dir = new THREE.Vector3();
+    var vel=controls.GetVelocity();
+    dir = camera.localToWorld(vel);//new THREE.Vector3(0, 0, 1));//поправить, чтобы не нормализовать и не прибавлять потом позицию
+    dir.sub(camera.position, dir);
+    dir.normalize();
+    
+        var alpha=dir.angleTo(vRadius);
+    
+        //obj.position.addSelf(camera.parent.position);
+        if (vRadius.dot(dir)<0){
+            controls.SetImpulse(-Math.PI / 2 + alpha);
         }
+        }
+        
     }
 }
 //.boundingBox

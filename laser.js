@@ -31,7 +31,7 @@ laser = function(camera) {
     var dir = new THREE.Vector3();
 
     dir = camera.localToWorld(new THREE.Vector3(0, 0, 1));
-    dir.sub(camera.position, dir);
+    dir.sub(dir,camera.position);
     dir.normalize();
 
     mesh.position.x = camera.position.x;

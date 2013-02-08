@@ -9,7 +9,8 @@ THREE.PointerLockControls = function ( camera ) {
 	var yawObject = new THREE.Object3D();
 	//yawObject.position.y = 10;
 	yawObject.add( camera );
-        yawObject.boundRadius=10;
+        
+    yawObject.boundRadius=10;//DEBUG
 
 
         var moveForward     = false;
@@ -180,11 +181,11 @@ matrixRot.multiplyVector3( velocity );
             velocityYaw += (-velocityYaw)*accelYawStop*delta;
 
 // ускорения
-            if ( moveForward ) velocity.z -= accelMove * delta; // увеличение скорости = движение вперёд
-            if ( moveBackward ) velocity.z += accelMove * delta;
+            if ( moveForward ) velocity.z+= accelMove * delta; // увеличение скорости = движение вперёд
+            if ( moveBackward ) velocity.z -= accelMove * delta;
 
-            if ( moveLeft ) velocity.x -= accelMove * delta;// увеличение скорости = движение влево
-            if ( moveRight ) velocity.x += accelMove * delta;
+            if ( moveLeft ) velocity.x += accelMove * delta;// увеличение скорости = движение влево
+            if ( moveRight ) velocity.x -= accelMove * delta;
 // фактические изменения конечных величин
 
                 rotateYaw.z += ( - rotateYaw.z ) * 0.016 * delta*2;

@@ -31,7 +31,7 @@ this.init=true;
         renderer = new THREE.WebGLRenderer( { antialias: true } );
 
         camera = new THREE.PerspectiveCamera( 35, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 2500 );
-        camera.position.z = 1;
+        camera.lookAt(new THREE.Vector3(0,0,1));
 
         scene = new THREE.Scene();
 
@@ -69,7 +69,7 @@ this.init=true;
         var mat = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: true } );
         sphere = new THREE.Mesh( new THREE.SphereGeometry( 20, 20, 10 ), mat );
         //sphere.scale.set( 10, 10, 10 );
-        sphere.position.z = -150;
+        sphere.position.z = 150;
         sphere.position.x = -50;
         //sphere.geometry.boundingSphere.radius=20;
         scene.add( sphere );
@@ -85,14 +85,14 @@ this.init=true;
                     mesh1.position.x = Math.random() * 1000 - 500;
                     mesh1.position.z = Math.random() * 1000 - 500;
                     mesh1.geometry.boundingSphere.radius=10;
-                    scene.add( mesh1 );
+                   // scene.add( mesh1 );
 
                     mesh2 = new THREE.Mesh( geometry, meterial_g );
                     mesh2.rotation.x = Math.PI;
                     mesh2.position.x = mesh1.position.x;
                     mesh2.position.z = mesh1.position.z;
                     //mesh1.geometry.boundingSphere.radius=10;
-                    scene.add( mesh2 );
+                    //scene.add( mesh2 );
 
             } );
         }
@@ -148,7 +148,9 @@ this.init=true;
 //        myLaser(this,controls.getObject());
 //    };
     scene.fireLaser=laser;
+    UTILS.addAll(scene);//DEBUG
 };
+
 
 function animate() {
 
@@ -157,7 +159,7 @@ function animate() {
         stats.update();
 
 };
-
+var vv=0;
         var sumdeltaD=0;
 function render() {
 
@@ -196,31 +198,56 @@ function render() {
 }
 
 function CheckCollisionWithCamera(obj){
-       
-    if (obj.geometry && obj.geometry.boundingSphere.radius<100){// instanceof THREE.Mesh){
-        var objAndCameraSize=obj.geometry.boundingSphere.radius+camera.parent.boundRadius;
-        if (obj.position.distanceTo(camera.parent.position)<objAndCameraSize){//distanceToSquared//фактическая позиция камеры не меняется!
+      
+    
+document.getElementById( "val_right" ).innerHTML = vv;
+
+    if (obj.geometry && obj.geometry.boundingSphere.radius<90){// instanceof THREE.Mesh){
+    var camObj = camera.parent;
+    var camRadius=camObj.boundRadius;
+    var objRadius=obj.geometry.boundingSphere.radius;
+    var camPos=camObj.position.clone();
+    var objPos=obj.position.clone(); 
+    var bothRadius=objRadius+camRadius;
+        
+        if (objPos.distanceTo(camPos)<bothRadius){//distanceToSquared//фактическая позиция камеры не меняется!
+            
         var vRadius=new THREE.Vector3();
-        vRadius.sub(obj.position,camera.parent.position);
-        //vRadius.addScalar(-obj.geometry.boundingSphere.radius);
-        vRadius.normalize();
+//        vRadius.sub(camPos,objPos);
+        vRadius.sub(objPos,camPos);
+        //vRadius.normalize();
+        //vRadius.z *=-1;
     
-    var dir = new THREE.Vector3();
-    var vel=controls.GetVelocity();
-    dir = camera.localToWorld(vel);//new THREE.Vector3(0, 0, 1));//поправить, чтобы не нормализовать и не прибавлять потом позицию
-    dir.sub(camera.position, dir);
-    dir.normalize();
-    
-        var alpha=dir.angleTo(vRadius);
-    
+        var dir = new THREE.Vector3();
+        var vel=controls.GetVelocity().clone();
+        if (vel.lengthSq<1){//если скорость маленькая, берём направление взгляда
+//            vel= new THREE.Vector3(0,0,1);
+        }
+        vel.normalize();
+//vel= new THREE.Vector3(0,0,1);
+        dir = camObj.localToWorld(vel);//new THREE.Vector3(0, 0, 1));//поправить, чтобы не нормализовать и не прибавлять потом позицию
+        dir.sub(dir,camPos);
+        dir.normalize();
+        var vRadiusNorm=vRadius.clone();
+        vRadiusNorm.normalize();
+        var alpha=dir.angleTo(vRadiusNorm);        
+        
+vv = alpha;//dir.dot(vRadiusNorm);
+
+UTILS.lookTo(camPos,vRadius);
+UTILS.lookToDir(camPos,dir);
         //obj.position.addSelf(camera.parent.position);
-        if (vRadius.dot(dir)<0){
-            controls.SetImpulse(-Math.PI / 2 + alpha);
+        if (dir.dot(vRadiusNorm)>0){
+            //controls.SetImpulse(-Math.PI / 2 + alpha);
+            camera.parent.position.x=0;
+            camera.parent.position.y=0;
+            camera.parent.position.z=0;
         }
         }
         
     }
 }
+
 //.boundingBox
 //Bounding box.
 //{ min: new THREE.Vector3(), max: new THREE.Vector3() }

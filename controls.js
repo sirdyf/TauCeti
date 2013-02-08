@@ -10,7 +10,7 @@ THREE.PointerLockControls = function ( camera ) {
 	//yawObject.position.y = 10;
 	yawObject.add( camera );
         
-    yawObject.boundRadius=10;//DEBUG
+    yawObject.boundRadius=20;//DEBUG
 
 
         var moveForward     = false;

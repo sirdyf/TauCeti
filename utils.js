@@ -12,6 +12,7 @@ UTILS.LineGeometry = function(){
 
 UTILS.lineDir = new THREE.Line(UTILS.LineGeometry());
 UTILS.line1 = new THREE.Line(UTILS.LineGeometry());
+UTILS.line2 = new THREE.Line(UTILS.LineGeometry());
 
 //UTILS.RotateDirY = function(angle){
 //    lineDir.rotation.y = angle;
@@ -21,6 +22,7 @@ UTILS.line1 = new THREE.Line(UTILS.LineGeometry());
 //};
 UTILS.addAll = function(parent){
     parent.add(UTILS.line1);
+    parent.add(UTILS.line2);
     parent.add(UTILS.lineDir);
 };
 UTILS.lookTo = function(base,dir){
@@ -34,5 +36,11 @@ UTILS.lookToDir = function(base,dir){
     var tmp=base.clone();
     tmp.addSelf(dir);
     UTILS.lineDir.lookAt(tmp);
+};
+UTILS.lookTo2 = function(base,dir){
+    UTILS.line2.position.copy(base);
+    var tmp=base.clone();
+    tmp.addSelf(dir);
+    UTILS.line2.lookAt(tmp);
 };
 

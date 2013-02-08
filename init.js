@@ -215,6 +215,7 @@ document.getElementById( "val_right" ).innerHTML = vv;
         var vRadius=new THREE.Vector3();
 //        vRadius.sub(camPos,objPos);
         vRadius.sub(objPos,camPos);
+        vRadius.y=-1;
         //vRadius.normalize();
         //vRadius.z *=-1;
     
@@ -226,23 +227,29 @@ document.getElementById( "val_right" ).innerHTML = vv;
         vel.normalize();
 //vel= new THREE.Vector3(0,0,1);
         dir = camObj.localToWorld(vel);//new THREE.Vector3(0, 0, 1));//поправить, чтобы не нормализовать и не прибавлять потом позицию
-        dir.sub(dir,camPos);
+        dir.sub(camPos,dir);
+       
         dir.normalize();
         var vRadiusNorm=vRadius.clone();
+        
         vRadiusNorm.normalize();
         var alpha=dir.angleTo(vRadiusNorm);        
         
-vv = alpha;//dir.dot(vRadiusNorm);
+vv = alpha*57;//dir.dot(vRadiusNorm);
 
 UTILS.lookTo(camPos,vRadius);
 UTILS.lookToDir(camPos,dir);
+UTILS.lookTo2(camPos,dir);
+//UTILS.line2.rotation.copy(UTILS.line1.rotation);
+UTILS.line2.rotation.y -=alpha;
+//UTILS.line2.position=camPos.clone();
         //obj.position.addSelf(camera.parent.position);
-        if (dir.dot(vRadiusNorm)>0){
-            //controls.SetImpulse(-Math.PI / 2 + alpha);
+//        if (dir.dot(vRadiusNorm)>0){
+            //controls.SetImpulse(Math.PI / 2 + alpha);
             camera.parent.position.x=0;
             camera.parent.position.y=0;
             camera.parent.position.z=0;
-        }
+//        }
         }
         
     }

@@ -241,11 +241,15 @@ UTILS.lookTo(camPos,vRadius);
 UTILS.lookToDir(camPos,dir);
 UTILS.lookTo2(camPos,dir);
 //UTILS.line2.rotation.copy(UTILS.line1.rotation);
-UTILS.line2.rotation.y -=alpha;
+var delta=dir.subSelf(dir);
+delta=camObj.worldToLocal(delta);
+var sign=delta.x>0 ? 1:-1;
+UTILS.line2.rotation.y = 2*alpha*sign;
+vv=sign;
 //UTILS.line2.position=camPos.clone();
         //obj.position.addSelf(camera.parent.position);
 //        if (dir.dot(vRadiusNorm)>0){
-            //controls.SetImpulse(Math.PI / 2 + alpha);
+//            controls.SetImpulse(180-2*alpha);
             camera.parent.position.x=0;
             camera.parent.position.y=0;
             camera.parent.position.z=0;

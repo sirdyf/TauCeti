@@ -7,10 +7,10 @@ THREE.PointerLockControls = function(camera) {
     var scope = this;
 
     var yawObject = new THREE.Object3D();
-    //yawObject.position.y = 10;
+    yawObject.position.y = 3;
     yawObject.add(camera);
 
-    yawObject.boundRadius = 20;//DEBUG
+    yawObject.boundRadius = 3;//DEBUG
 
 
     var moveForward = false;
@@ -157,7 +157,7 @@ THREE.PointerLockControls = function(camera) {
     };
     this.SetImpulse = function(angleValue) {
         impAngleValue = angleValue;
-
+        
 //************
 //var vector = new THREE.Vector3( 1, 0, 0 );
 
@@ -166,8 +166,12 @@ THREE.PointerLockControls = function(camera) {
         var matrixRot = new THREE.Matrix4().makeRotationAxis(axis, angleValue);
 
         matrixRot.multiplyVector3(velocity);
+//        CheckCollResult();
+//        velocityYaw = angleValue;
 //************
     };
+//    this.CheckCollResult = function(){
+//    };
 
     var speedMax = 10;//максимальная скорость
     var accelStop = 0.08;//ускорение торможения
@@ -198,7 +202,7 @@ THREE.PointerLockControls = function(camera) {
         if (moveRight)
             velocity.x -= accelMove * delta;
 // фактические изменения конечных величин
-
+//    velocity.y = 3;
         rotateYaw.z += (-rotateYaw.z) * 0.016 * delta * 2;
         if (rotateYawCW) {
             velocityYaw -= accelYawMove * delta;
@@ -221,7 +225,7 @@ THREE.PointerLockControls = function(camera) {
         yawObject.translateX(velocity.x);
         yawObject.translateZ(velocity.z);
 
-        yawObject.position.y = yawObject_position_y;
+//        yawObject.position.y = yawObject_position_y;
     };
 
 };

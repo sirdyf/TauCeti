@@ -140,7 +140,8 @@ function init() {
     scene.fireLaser = laser;
     
     UTILS.addLine(scene);//DEBUG
-    UTILS.addLine(scene);//DEBUG
+    UTILS.addLineColor(scene);//DEBUG
+    UTILS.addLineColor(scene);//DEBUG
     UTILS.addLine(scene);//DEBUG
 }
 ;
@@ -170,7 +171,7 @@ function render() {
     for (var index in scene.children) {
         mouseX += 1;
         var object = scene.children[index];
-        if (true) {//sumdeltaD > 10){
+        if (sumdeltaD > 10){
             CheckCollisionWithCamera(object);
         }
         if ("update" in object) {
@@ -181,7 +182,7 @@ function render() {
         sumdeltaD = 0;
     }
 
-    //document.getElementById( "val_right" ).innerHTML = sumdelta;
+//    document.getElementById( "val_right" ).innerHTML = vv;
 
     // renderer.render( scene, camera );
 
@@ -203,48 +204,65 @@ function CheckCollisionWithCamera(obj) {
         var objRadius = obj.geometry.boundingSphere.radius;
         var camPos = camObj.position.clone();
         var objPos = obj.position.clone();
+        objPos.y = camPos.y; // Чтобы любые объекты были на уровне камеры
         var bothRadius = objRadius + camRadius;
+        var dir = new THREE.Vector3();
 
         if (objPos.distanceTo(camPos) < bothRadius) {//distanceToSquared//фактическая позиция камеры не меняется!
 
             var vRadius = new THREE.Vector3();
             vRadius.sub(objPos, camPos);
-            vRadius.y = -1;//чтобы визуально было виднее
+//            vRadius.y = -2.5;//чтобы визуально было виднее
 
-            var vel = controls.GetVelocity().clone();
-            if (vel.lengthSq < 1) {//если скорость маленькая, берём направление взгляда
-                vel= new THREE.Vector3(0,0,1);
-            }
-            vel= new THREE.Vector3(0,0,1);//DEBUG
-            vel.normalize();
 
-            var dir = new THREE.Vector3();
-            dir = camObj.localToWorld(vel);//new THREE.Vector3(0, 0, 1));//поправить, чтобы не нормализовать и не прибавлять потом позицию
-            dir.sub(camPos, dir);
+            var vel= new THREE.Vector3(0,0,1);//DEBUG
+
+            dir = camObj.localToWorld(vel);
+            dir.sub(dir,camPos);
             dir.normalize();
+            dir.y =0 ;//работаем в лоскости XZ
             
             var vRadiusNorm = vRadius.clone();
             vRadiusNorm.normalize();
+            vRadiusNorm.y=0;//работаем в лоскости XZ
             
-            var alpha = dir.angleTo(vRadiusNorm);
-
+            var alpha = vRadiusNorm.angleTo(dir);
+            
+            vv=alpha;
+            if (vv > Math.PI / 2){
+                vv=0;
+            }
+            
+            var pointCol = vRadiusNorm.clone();
+            pointCol.addScalar(camRadius);pointCol.y=0.5;
+            pointCol.addSelf(camPos);
             UTILS.lookTo(0,camPos, vRadius);
             UTILS.lookTo(1,camPos, dir);
             UTILS.lookTo(2,camPos, dir);
+            UTILS.lookTo(3,camPos, vRadius);
+            UTILS.lines[3].rotation.y +=  Math.PI / 2;
+            //obj.visible = false;
 
-            var delta = dir.subSelf(dir);
-            delta = camObj.worldToLocal(delta);
-            var sign = delta.x > 0 ? 1 : -1;
+            //var delta = dir.subSelf(vRadiusNorm);//Не верно. Нужно всего лишь объект перевести в ЛСК камеры!
+            var delta = camObj.worldToLocal(objPos);
+            var sign = 1;//delta.x > 0 ? 1 : -1;
+//            if (camPos.z > 0) sign *= -1;
+
+document.getElementById( "val_right" ).innerHTML = vv;
             
-            UTILS.lines[2].rotation.y = 2 * alpha * sign;
-//            vv = sign;//DEBUG
-
-//        if (dir.dot(vRadiusNorm)>0){
-//            controls.SetImpulse(180-2*alpha);
-            camera.parent.position.x = 0;
-            camera.parent.position.y = 0;
-            camera.parent.position.z = 0;
-//        }
+            UTILS.lines[2].rotation.y +=  (Math.PI - 2 * alpha) * sign;
+            if (false){
+                controls.SetImpulse((Math.PI - 2 * alpha) * sign);
+                while(objPos.distanceTo(camPos) < bothRadius){
+                    controls.update(0.017);//???
+                    camPos = camObj.position.clone();
+                }
+            }else{
+                    camera.parent.position.x = 0;
+                    camera.parent.position.y = 3;
+                    camera.parent.position.z = 0;
+//                    camera.lookAt(-50,0,150);
+            }
         }
 
     }

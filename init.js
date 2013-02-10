@@ -159,9 +159,9 @@ var vv = 0;
 var sumdeltaD = 0;
 function render() {
 
+
     var delta_time = clock.getDelta();
     sumdeltaD += 1;
-    renderer.clear();
 
     controls.update(delta_time * 10);
     terrain.update(controls.getObject());
@@ -184,8 +184,6 @@ function render() {
 
 //    document.getElementById( "val_right" ).innerHTML = vv;
 
-    // renderer.render( scene, camera );
-
     renderer.clear();
     composer.render();
 
@@ -200,26 +198,22 @@ function CheckCollisionWithCamera(obj) {
 
     if (obj.geometry && obj.geometry.boundingSphere.radius < 90) {// instanceof THREE.Mesh){
         var camObj = camera.parent;
+        
         var camRadius = camObj.boundRadius;
         var objRadius = obj.geometry.boundingSphere.radius;
-        var camPos = camObj.position.clone();
-        var objPos = obj.position.clone();
+        var camPos = camObj.matrix.getPosition().clone();
+        var objPos = obj.matrix.getPosition().clone();
         objPos.y = camPos.y; // Чтобы любые объекты были на уровне камеры
         var bothRadius = objRadius + camRadius;
         var dir = new THREE.Vector3();
+        var vRadius = new THREE.Vector3();
 
         if (objPos.distanceTo(camPos) < bothRadius) {//distanceToSquared//фактическая позиция камеры не меняется!
 
-            var vRadius = new THREE.Vector3();
             vRadius.sub(objPos, camPos);
-//            vRadius.y = -2.5;//чтобы визуально было виднее
-
-
-            var vel= new THREE.Vector3(0,0,1);//DEBUG
-
-            dir = camObj.localToWorld(vel);
-            dir.sub(dir,camPos);
-            dir.normalize();
+            
+            dir = camObj.localToWorld(new THREE.Vector3(0,0,1));
+            dir.subSelf(camPos);
             dir.y =0 ;//работаем в лоскости XZ
             
             var vRadiusNorm = vRadius.clone();
@@ -245,7 +239,7 @@ function CheckCollisionWithCamera(obj) {
 
             //var delta = dir.subSelf(vRadiusNorm);//Не верно. Нужно всего лишь объект перевести в ЛСК камеры!
             var delta = camObj.worldToLocal(objPos);
-            var sign = 1;//delta.x > 0 ? 1 : -1;
+            var sign = delta.x > 0 ? -1 : 1;
 //            if (camPos.z > 0) sign *= -1;
 
 document.getElementById( "val_right" ).innerHTML = vv;

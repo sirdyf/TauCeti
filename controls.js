@@ -161,10 +161,10 @@ THREE.PointerLockControls = function(camera) {
 //************
 //var vector = new THREE.Vector3( 1, 0, 0 );
 
-        var axis = new THREE.Vector3(0, 1, 0);
 //var angle = Math.PI / 2;
-        var matrixRot = new THREE.Matrix4().makeRotationAxis(axis, angleValue);
 
+        var axis = new THREE.Vector3(0, 1, 0);
+        var matrixRot = new THREE.Matrix4().makeRotationAxis(axis, angleValue);
         matrixRot.multiplyVector3(velocity);
 //        CheckCollResult();
 //        velocityYaw = angleValue;
@@ -202,7 +202,7 @@ THREE.PointerLockControls = function(camera) {
         if (moveRight)
             velocity.x -= accelMove * delta;
 // фактические изменения конечных величин
-//    velocity.y = 3;
+//    velocity. y = 3;
         rotateYaw.z += (-rotateYaw.z) * 0.016 * delta * 2;
         if (rotateYawCW) {
             velocityYaw -= accelYawMove * delta;
@@ -224,6 +224,7 @@ THREE.PointerLockControls = function(camera) {
 
         yawObject.translateX(velocity.x);
         yawObject.translateZ(velocity.z);
+        yawObject.position.y = 3; // The kostyl
 
 //        yawObject.position.y = yawObject_position_y;
     };

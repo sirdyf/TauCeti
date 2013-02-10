@@ -193,7 +193,7 @@ function render() {
 
 function CheckCollisionWithCamera(obj) {
 
-
+vv = camera.parent.rotation.y;
     document.getElementById("val_right").innerHTML = vv;
 
     if (obj.geometry && obj.geometry.boundingSphere.radius < 90) {// instanceof THREE.Mesh){
@@ -233,12 +233,14 @@ function CheckCollisionWithCamera(obj) {
             UTILS.lookTo(0,camPos, vRadius);
             UTILS.lookTo(1,camPos, dir);
             UTILS.lookTo(2,camPos, dir);
+//            vv = UTILS.lines[1].rotation.y;
             UTILS.lookTo(3,camPos, vRadius);
             UTILS.lines[3].rotation.y +=  Math.PI / 2;
             //obj.visible = false;
 
             //var delta = dir.subSelf(vRadiusNorm);//Не верно. Нужно всего лишь объект перевести в ЛСК камеры!
             var delta = camObj.worldToLocal(objPos);
+            
             var sign = delta.x > 0 ? -1 : 1;
 //            if (camPos.z > 0) sign *= -1;
 

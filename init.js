@@ -32,7 +32,7 @@ function init() {
     renderer = new THREE.WebGLRenderer({antialias: true});
 
     camera = new THREE.PerspectiveCamera(35, SCREEN_WIDTH / SCREEN_HEIGHT, 1, 2500);
-    camera.lookAt(new THREE.Vector3(0, 0, 1));
+//    camera.lookAt(new THREE.Vector3(0, 0, 1));
 
     scene = new THREE.Scene();
 
@@ -231,18 +231,22 @@ vv = camera.parent.rotation.y;
             pointCol.addScalar(camRadius);pointCol.y=0.5;
             pointCol.addSelf(camPos);
             UTILS.lookTo(0,camPos, vRadius);
-            UTILS.lookTo(1,camPos, dir);
-            UTILS.lookTo(2,camPos, dir);
-//            vv = UTILS.lines[1].rotation.y;
             UTILS.lookTo(3,camPos, vRadius);
             UTILS.lines[3].rotation.y +=  Math.PI / 2;
-            //obj.visible = false;
+            
+//            UTILS.lookTo(1,camPos, dir);
+//            UTILS.lookTo(2,camPos, dir);
+//            UTILS.lines[1].matrix.copy(camObj.matrix);
+//            UTILS.lines[2].matrix.copy(camObj.matrix);
+            UTILS.lines[1].position.copy(camObj.position);
+            UTILS.lines[1].rotation.copy(camObj.rotation);
+            UTILS.lines[2].position.copy(camObj.position);
+            UTILS.lines[2].rotation.copy(camObj.rotation);
+            
 
-            //var delta = dir.subSelf(vRadiusNorm);//Не верно. Нужно всего лишь объект перевести в ЛСК камеры!
             var delta = camObj.worldToLocal(objPos);
             
             var sign = delta.x > 0 ? -1 : 1;
-//            if (camPos.z > 0) sign *= -1;
 
 document.getElementById( "val_right" ).innerHTML = vv;
             

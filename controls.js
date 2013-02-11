@@ -193,14 +193,14 @@ THREE.PointerLockControls = function(camera) {
 
 // ускорения
         if (moveForward)
-            velocity.z += accelMove * delta; // увеличение скорости = движение вперёд
+            velocity.z -= accelMove * delta; // увеличение скорости = движение вперёд
         if (moveBackward)
-            velocity.z -= accelMove * delta;
+            velocity.z += accelMove * delta;
 
         if (moveLeft)
-            velocity.x += accelMove * delta;// увеличение скорости = движение влево
+            velocity.x -= accelMove * delta;// увеличение скорости = движение влево
         if (moveRight)
-            velocity.x -= accelMove * delta;
+            velocity.x += accelMove * delta;
 // фактические изменения конечных величин
 //    velocity. y = 3;
         rotateYaw.z += (-rotateYaw.z) * 0.016 * delta * 2;

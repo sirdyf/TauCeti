@@ -5,14 +5,14 @@
 var    UTILS = UTILS || { REVISION: '0.1' };
 
 UTILS.LineGeometry = function(size,posY){
-    size = size || 100;
+    size = size || -100;
     posY = posY || -2.5;
     var geom1 = new THREE.Geometry();
     geom1.vertices.push( new THREE.Vector3(0,posY,-size), new THREE.Vector3(0,posY,size ) );
     return geom1;
 };
 UTILS.LineGeometry2 = function(size,posY){
-    size = size || 100;
+    size = size || -100;
     posY = posY || -2.5;
     var geom1 = new THREE.Geometry();
     geom1.vertices.push( new THREE.Vector3(0,posY,-size/10), new THREE.Vector3(0,posY,size ) );

@@ -9,6 +9,8 @@ var camera, scene, renderer, geometry, terrain, meterial_g;
 
 var PointLight;
 
+var scan;
+
 var num = 0;
 
 var mouseX = 0, mouseY = 0;
@@ -34,7 +36,9 @@ function init() {
         camera.position.z = 0;
 
         scene = new THREE.Scene();
+        
         PointLight = new pointlight(scene);
+    
         scene.add( camera );
 	
         scene.fog = new THREE.FogExp2( 0x050510, 0.0025 );
@@ -51,17 +55,6 @@ function init() {
 
         var maxAnisotropy = renderer.getMaxAnisotropy();
         
-        if ( maxAnisotropy > 0 ) {
-
-                document.getElementById( "val_left" ).innerHTML = maxAnisotropy;
-
-        } else {
-
-                document.getElementById( "val_left" ).innerHTML = "not supported";
-                document.getElementById( "val_right" ).innerHTML =  "not supported";
-
-        }
-        
         terrain = new terrain(scene, maxAnisotropy);
         
         var mat = new THREE.MeshLambertMaterial( { color: 0xffffff, shading: THREE.FlatShading, overdraw: true } );
@@ -69,6 +62,7 @@ function init() {
         //sphere.scale.set( 10, 10, 10 );
         sphere.position.z = -150;
         sphere.position.x = -50;
+        sphere.name = "sphere";
         scene.add( sphere );
         
         for(var i=0; i< 20; i++) {
@@ -81,6 +75,7 @@ function init() {
                     mesh1 = new THREE.Mesh( geometry, meterial_g );
                     mesh1.position.x = Math.random() * 1000 - 500;
                     mesh1.position.z = Math.random() * 1000 - 500;;
+                    mesh1.name = "factory";
                     scene.add( mesh1 );
 
                     mesh2 = new THREE.Mesh( geometry, meterial_g );
@@ -102,7 +97,6 @@ function init() {
         container.appendChild( renderer.domElement );
 
         // STATS1
-
         stats = new Stats();
         container.appendChild( stats.domElement );
 
@@ -130,7 +124,8 @@ function init() {
         //composer.addPass( effectFXAA );
         //composer.addPass( effectBloom );
         composer.addPass( effectCopy );
-
+        
+        scan = new scaner(scene, container, 320, 320);
 
 };
 
@@ -151,22 +146,19 @@ function render() {
         controls.update( delta_time * 10);
         terrain.update(controls.getObject());
         
-        mouseX = 0;
-        
         for(var index in scene.children) {
-            mouseX += 1;
             var object = scene.children[index];
             if ("update" in object){
                 object.update( delta_time );
              }
          }
 
-        //document.getElementById( "val_right" ).innerHTML = PoingLight[0].distance;
-
-        // renderer.render( scene, camera );
-        
-	renderer.clear();
-        composer.render();
+        //document.getElementById( "val_left" ).innerHTML = PoingLight[0].distance;
+    
+        scan.update(delta_time);
+    
+        renderer.render( scene, camera );        
+        //composer.render();
 
 	time = Date.now();
 
@@ -187,3 +179,17 @@ var onKeyDownMain = function ( event ) {
 };
 
 document.addEventListener( 'keydown', onKeyDownMain, false );
+
+function onWindowResize() {
+        
+        SCREEN_WIDTH = window.innerWidth;
+        SCREEN_HEIGHT = window.innerHeight;
+
+        camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+
+}
+
+window.addEventListener( 'resize', onWindowResize, false );

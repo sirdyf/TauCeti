@@ -10,7 +10,7 @@ THREE.PointerLockControls = function(camera) {
     yawObject.position.y = 3;
     yawObject.add(camera);
 
-    yawObject.boundRadius = 3;//DEBUG
+    yawObject.boundRadius = 5;//DEBUG
 
 
     var moveForward = false;
@@ -23,7 +23,7 @@ THREE.PointerLockControls = function(camera) {
     var isOnObject = false;
     var canJump = false;
 
-    velocity = new THREE.Vector3();
+    var velocity = new THREE.Vector3();
 
     var rotateYaw = new THREE.Vector3();
 
@@ -137,23 +137,19 @@ THREE.PointerLockControls = function(camera) {
 
     this.enabled = false;
 
-    this.getObject = function() {
-
+//    this.isOnObject = function(boolean) {
+//
+//        isOnObject = boolean;
+//        canJump = boolean;
+//
+//    };
+    this.getObject = function(){
         return yawObject;
-
     };
-
-    this.isOnObject = function(boolean) {
-
-        isOnObject = boolean;
-        canJump = boolean;
-
-    };
-
     var impAngleValue = 0;
 
     this.GetVelocity = function() {
-        return velocity;
+        return velocity.clone();
     };
     this.SetImpulse = function(angleValue) {
         impAngleValue = angleValue;
@@ -166,6 +162,7 @@ THREE.PointerLockControls = function(camera) {
         var axis = new THREE.Vector3(0, 1, 0);
         var matrixRot = new THREE.Matrix4().makeRotationAxis(axis, angleValue);
         matrixRot.multiplyVector3(velocity);
+        velocity.multiplyScalar(0.5);
 //        CheckCollResult();
 //        velocityYaw = angleValue;
 //************
@@ -219,14 +216,17 @@ THREE.PointerLockControls = function(camera) {
         if (rotateYawСCW)
             rotateYaw.z -= 0.016 * delta / 2;
 
+            this.move();
+//        yawObject.position.y = yawObject_position_y;
+    };
+    this.move = function(){
         yawObject.rotation.y = rotateYaw.y;
         yawObject.rotation.z = rotateYaw.z;
 
         yawObject.translateX(velocity.x);
         yawObject.translateZ(velocity.z);
         yawObject.position.y = 3; // The kostyl
-
-//        yawObject.position.y = yawObject_position_y;
+        
     };
 
 };

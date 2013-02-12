@@ -70,7 +70,7 @@ function init() {
     var mat = new THREE.MeshLambertMaterial({color: 0xffffff, shading: THREE.FlatShading, overdraw: true});
     sphere = new THREE.Mesh(new THREE.SphereGeometry(20, 20, 10), mat);
     //sphere.scale.set( 10, 10, 10 );
-    sphere.position.z = 150;
+    sphere.position.z = -150;
     sphere.position.x = -50;
     //sphere.geometry.boundingSphere.radius=20;
     scene.add(sphere);
@@ -190,29 +190,50 @@ function render() {
     time = Date.now();
 
 }
+//document.getElementById( "val_right" ).innerHTML = vv;
 
 function CheckCollisionWithCamera(obj) {
 
 vv = camera.parent.rotation.y;
-    document.getElementById("val_right").innerHTML = vv;
 
     if (obj.geometry && obj.geometry.boundingSphere.radius < 90) {// instanceof THREE.Mesh){
-        var camObj = camera.parent;
         
-        var camRadius = camObj.boundRadius;
+        var camPos = camera.parent.matrix.getPosition().clone();//position.clone();
+
+        var objPos = obj.matrix.getPosition().clone();//position.clone();
         var objRadius = obj.geometry.boundingSphere.radius;
-        var camPos = camObj.matrix.getPosition().clone();
-        var objPos = obj.matrix.getPosition().clone();
+        
+        var bothRadius = objRadius + camera.parent.boundRadius;
+
         objPos.y = camPos.y; // Чтобы любые объекты были на уровне камеры
-        var bothRadius = objRadius + camRadius;
-        var dir = new THREE.Vector3();
-        var vRadius = new THREE.Vector3();
 
         if (objPos.distanceTo(camPos) < bothRadius) {//distanceToSquared//фактическая позиция камеры не меняется!
+            //Есть столкновение!
+            this.colPingPong(obj);
+        }
+    }
+}
+this.colPingPong = function(obj){
+        var camObj = camera.parent;
+        var camRadius = camObj.boundRadius;
+        var camPos = camObj.matrix.getPosition().clone();//position.clone();
+
+        var objPos = obj.matrix.getPosition().clone();//position.clone();
+        var objRadius = obj.geometry.boundingSphere.radius;
+        var bothRadius = objRadius + camRadius;
+
+        objPos.y = camPos.y; // Чтобы любые объекты были на уровне камеры
+                    var dir = new THREE.Vector3();
+            var vRadius = new THREE.Vector3();
 
             vRadius.sub(objPos, camPos);
-            
-            dir = camObj.localToWorld(new THREE.Vector3(0,0,1));
+            dir=controls.GetVelocity();
+            if (dir.lengthSq()<1){
+                dir = camObj.localToWorld(new THREE.Vector3(0,0,-1));
+            }else{
+                dir.normalize();
+                camObj.localToWorld(dir);//dir меняется!
+            }
             dir.subSelf(camPos);
             dir.y =0 ;//работаем в лоскости XZ
             
@@ -222,11 +243,6 @@ vv = camera.parent.rotation.y;
             
             var alpha = vRadiusNorm.angleTo(dir);
             
-            vv=alpha;
-            if (vv > Math.PI / 2){
-                vv=0;
-            }
-            
             var pointCol = vRadiusNorm.clone();
             pointCol.addScalar(camRadius);pointCol.y=0.5;
             pointCol.addSelf(camPos);
@@ -235,39 +251,36 @@ vv = camera.parent.rotation.y;
             UTILS.lines[3].rotation.y +=  Math.PI / 2;
             
 //            UTILS.lookTo(1,camPos, dir);
-//            UTILS.lookTo(2,camPos, dir);
 //            UTILS.lines[1].matrix.copy(camObj.matrix);
-//            UTILS.lines[2].matrix.copy(camObj.matrix);
-            UTILS.lines[1].position.copy(camObj.position);
+            UTILS.lines[1].position.copy(camObj.position);//matrix.getPosition());
             UTILS.lines[1].rotation.copy(camObj.rotation);
             UTILS.lines[2].position.copy(camObj.position);
             UTILS.lines[2].rotation.copy(camObj.rotation);
             
 
-            var delta = camObj.worldToLocal(objPos);
+            var delta = objPos.clone();
+            camObj.worldToLocal(delta);
             
-            var sign = delta.x > 0 ? -1 : 1;
+            var sign = delta.x > 0 ? 1 : -1;
 
-document.getElementById( "val_right" ).innerHTML = vv;
-            
             UTILS.lines[2].rotation.y +=  (Math.PI - 2 * alpha) * sign;
-            if (false){
+            if (delta.z >= 0) alpha += Math.PI;
+            if (true){//delta.z < 0){
                 controls.SetImpulse((Math.PI - 2 * alpha) * sign);
                 while(objPos.distanceTo(camPos) < bothRadius){
-                    controls.update(0.017);//???
-                    camPos = camObj.position.clone();
+                    controls.move();
+                    camObj.updateMatrix();
+                    camPos = camObj.matrix.getPosition().clone();
                 }
-            }else{
-                    camera.parent.position.x = 0;
-                    camera.parent.position.y = 3;
-                    camera.parent.position.z = 0;
-//                    camera.lookAt(-50,0,150);
             }
-        }
-
-    }
-}
-
+//            else{
+//                    camera.parent.position.x = 0;
+//                    camera.parent.position.y = 3;
+//                    camera.parent.position.z = 0;
+////                    camera.lookAt(-50,0,150);
+//            }
+            
+};
 //.boundingBox
 //Bounding box.
 //{ min: new THREE.Vector3(), max: new THREE.Vector3() }

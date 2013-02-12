@@ -167,17 +167,20 @@ function render() {
     terrain.update(controls.getObject());
 
     mouseX = 0;
-
+var collision=false;
     for (var index in scene.children) {
         mouseX += 1;
         var object = scene.children[index];
         if (sumdeltaD > 10){
-            CheckCollisionWithCamera(object);
+            if (CheckCollisionWithCamera(object)===true){
+                collision=true;
+            }
         }
         if ("update" in object) {
             object.update(delta_time);
         }
     }
+    if (collision === false){controls.controlSet(true);}
     if (sumdeltaD > 10) {
         sumdeltaD = 0;
     }
@@ -194,8 +197,6 @@ function render() {
 
 function CheckCollisionWithCamera(obj) {
 
-vv = camera.parent.rotation.y;
-
     if (obj.geometry && obj.geometry.boundingSphere.radius < 90) {// instanceof THREE.Mesh){
         
         var camPos = camera.parent.matrix.getPosition().clone();//position.clone();
@@ -210,10 +211,15 @@ vv = camera.parent.rotation.y;
         if (objPos.distanceTo(camPos) < bothRadius) {//distanceToSquared//фактическая позиция камеры не меняется!
             //Есть столкновение!
             this.colPingPong(obj);
+            return true;
         }
     }
+    return false;
 }
 this.colPingPong = function(obj){
+    if (controls.getControValue() === false){ // управление отключено, значит углы вычислены
+        return;
+    }
         var camObj = camera.parent;
         var camRadius = camObj.boundRadius;
         var camPos = camObj.matrix.getPosition().clone();//position.clone();
@@ -265,14 +271,20 @@ this.colPingPong = function(obj){
 
             UTILS.lines[2].rotation.y +=  (Math.PI - 2 * alpha) * sign;
             if (delta.z >= 0) alpha += Math.PI;
-            if (true){//delta.z < 0){
+//            if (true){//delta.z < 0){
+//                controls.SetImpulse((Math.PI - 2 * alpha) * sign);
+//                while(objPos.distanceTo(camPos) < bothRadius){
+//                    controls.move();
+//                    camObj.updateMatrix();
+//                    camPos = camObj.matrix.getPosition().clone();
+//                }
                 controls.SetImpulse((Math.PI - 2 * alpha) * sign);
-                while(objPos.distanceTo(camPos) < bothRadius){
-                    controls.move();
-                    camObj.updateMatrix();
-                    camPos = camObj.matrix.getPosition().clone();
-                }
-            }
+//                camPos = camObj.matrix.getPosition().clone();
+//                if (objPos.distanceTo(camPos) > bothRadius){
+//                    controls.controlSet(true);
+//                }
+//            
+//            }
 //            else{
 //                    camera.parent.position.x = 0;
 //                    camera.parent.position.y = 3;

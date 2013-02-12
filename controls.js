@@ -12,7 +12,7 @@ THREE.PointerLockControls = function(camera) {
 
     yawObject.boundRadius = 5;//DEBUG
 
-
+    var enableContols = true;
     var moveForward = false;
     var moveBackward = false;
     var moveLeft = false;
@@ -135,7 +135,7 @@ THREE.PointerLockControls = function(camera) {
     document.addEventListener('keydown', onKeyDown, false);
     document.addEventListener('keyup', onKeyUp, false);
 
-    this.enabled = false;
+    this.enabled = false;//???
 
 //    this.isOnObject = function(boolean) {
 //
@@ -146,10 +146,16 @@ THREE.PointerLockControls = function(camera) {
     this.getObject = function(){
         return yawObject;
     };
-    var impAngleValue = 0;
+    var impAngleValue = undefined;
 
     this.GetVelocity = function() {
         return velocity.clone();
+    };
+    this.controlSet = function(flag){
+        enableContols = flag;
+    };
+    this.getControlValue = function(){
+        return enableContols;
     };
     this.SetImpulse = function(angleValue) {
         impAngleValue = angleValue;
@@ -163,6 +169,9 @@ THREE.PointerLockControls = function(camera) {
         var matrixRot = new THREE.Matrix4().makeRotationAxis(axis, angleValue);
         matrixRot.multiplyVector3(velocity);
         velocity.multiplyScalar(0.5);
+        enableContols = false;
+        this.move();
+        yawObject.updateMatrix();
 //        CheckCollResult();
 //        velocityYaw = angleValue;
 //************
@@ -183,6 +192,10 @@ THREE.PointerLockControls = function(camera) {
 
         if (scope.enabled === false)
             return;
+        if (enableContols === false){
+            this.move();
+            return;
+        }
 // торможения
         velocity.x += (-velocity.x) * accelStop * delta; // уменьшение скорости = торможение X
         velocity.z += (-velocity.z) * accelStop * delta; // уменьшение скорости = торможение Z

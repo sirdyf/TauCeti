@@ -125,7 +125,7 @@ function init() {
         //composer.addPass( effectBloom );
         composer.addPass( effectCopy );
         
-        scan = new scaner(scene, container, 320, 320);
+        scan = new scaner(container, scene, controls.getObject(), SCREEN_HEIGHT / 2, SCREEN_HEIGHT / 2);
 
 };
 
@@ -174,6 +174,10 @@ var onKeyDownMain = function ( event ) {
         //    PoingLight[l].distance = 0;
         //    PoingLight[l].enabled = false;
         //}
+        
+//        mouseX += 10;
+//        scan.remove();
+//        scan = new scaner(container, scene, controls.getObject(), mouseX, mouseX);
     
     }
 };
@@ -189,6 +193,10 @@ function onWindowResize() {
         camera.updateProjectionMatrix();
 
         renderer.setSize( SCREEN_WIDTH, SCREEN_HEIGHT );
+        
+        scan.remove();
+        scan = new scaner(container, scene, controls.getObject(), SCREEN_HEIGHT / 2, SCREEN_HEIGHT / 2);
+
 
 }
 

@@ -6,7 +6,7 @@ var SCREEN_HEIGHT = window.innerHeight;
 
 var container, stats;
 
-var camera, scene, renderer, geometry, terrain, meterial_g;
+var camera, scene, renderer, geometry, terrain, meterial_g, scan;
 
 var PointLight;
 
@@ -25,7 +25,7 @@ var composer, effectFXAA;
 
 init();
 animate();
-
+ 
 function init() {
     this.init = true;
     container = document.createElement('div');
@@ -79,6 +79,7 @@ function init() {
     sphere = new THREE.Mesh(new THREE.SphereGeometry(20, 20, 10), mat);
     sphere.position.z = -150;
     sphere.position.x = -50;
+    sphere.name = "factory";
     scene.add(sphere);
         stats = new Stats();
         container.appendChild( stats.domElement );
@@ -94,6 +95,7 @@ function init() {
             mesh1.position.x = Math.random() * 1000 - 500;
             mesh1.position.z = Math.random() * 1000 - 500;
 //            mesh1.geometry.boundingSphere.radius = 10;
+            mesh1.name = "sphere";
             scene.add( mesh1 );
 
 
@@ -102,6 +104,7 @@ function init() {
             mesh2.position.x = mesh1.position.x;
             mesh2.position.z = mesh1.position.z;
 //            mesh1.geometry.boundingSphere.radius=10;
+            mesh2.name = "sphere";
             scene.add( mesh2 );
         });
     }
@@ -152,10 +155,13 @@ function init() {
     UTILS.addLineColor(scene);//DEBUG
     UTILS.addLineColor(scene);//DEBUG
     UTILS.addLine(scene);//DEBUG
+    
+     scan = new scaner(container, scene, controls.getObject(), SCREEN_HEIGHT / 2, SCREEN_HEIGHT / 2);
+
 }
 
         
-        scan = new scaner(container, scene, controls.getObject(), SCREEN_HEIGHT / 2, SCREEN_HEIGHT / 2);
+       
 
 
 
@@ -179,21 +185,7 @@ function render() {
         controls.update( delta_time * 10);
         terrain.update(controls.getObject());
         
-        for(var index in scene.children) {
-            var object = scene.children[index];
-            if ("update" in object){
-                object.update( delta_time );
-             }
-         }
-
-        //document.getElementById( "val_left" ).innerHTML = PoingLight[0].distance;
-    
-        scan.update(delta_time);
-    
-        renderer.render( scene, camera );        
-        //composer.render();
-
-
+  
     mouseX = 0;
     var collision = false;
     for (var index in scene.children) {
@@ -211,6 +203,7 @@ function render() {
     if (collision === false) {
         controls.controlSet(true);
     }
+        scan.update(delta_time);
 
     renderer.clear();
     composer.render();

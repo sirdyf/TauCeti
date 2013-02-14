@@ -181,6 +181,7 @@ THREE.PointerLockControls = function(camera) {
 
     var yawObject_position_y = 3;
 
+this.vv=0;
     this.update = function(delta) {//delta is "delta time"
 
         if (scope.enabled === false)
@@ -237,11 +238,14 @@ THREE.PointerLockControls = function(camera) {
 
     };
 //document.getElementById( "val_right" ).innerHTML = vv;
-    this.colPingPong = function(obj) {
+    this.colPingPong = function(ob) {
         if (this.getControlValue() === false) { // управление отключено, значит углы вычислены
             return;
         }
-        var camObj = camera.parent;
+        var obj=ob.clone();
+        var camObj = camera.parent.clone();
+//        camObj.updateMatrix();
+//        camObj.updateMatrixWorld(true);
         var camRadius = camObj.boundRadius;
         var camPos = camObj.matrix.getPosition().clone();//position.clone();
 
@@ -255,8 +259,10 @@ THREE.PointerLockControls = function(camera) {
 
         vRadius.sub(objPos, camPos);
         dir = this.GetVelocity();
-        if (dir.lengthSq() < 1) {
-            dir = camObj.localToWorld(new THREE.Vector3(0, 0, -1));
+        if (true){//dir.lengthSq() < 1) {
+            dir = new THREE.Vector3(0, 0, -1);
+//            dir = 
+                    camObj.localToWorld(dir);
         } else {
             dir.normalize();
             camObj.localToWorld(dir);//dir меняется!
@@ -269,6 +275,9 @@ THREE.PointerLockControls = function(camera) {
         vRadiusNorm.y = 0;//работаем в лоскости XZ
 
         var alpha = vRadiusNorm.angleTo(dir);
+        if (alpha>Math.PI / 2){
+            alpha=alpha;
+        }
 
         var pointCol = vRadiusNorm.clone();
         pointCol.addScalar(camRadius);
@@ -288,7 +297,7 @@ THREE.PointerLockControls = function(camera) {
         camObj.worldToLocal(delta);
 
         var sign = delta.x > 0 ? 1 : -1;
-
+this.vv=alpha;
         UTILS.lines[2].rotation.y += (Math.PI - 2 * alpha) * sign;
         if (delta.z >= 0)
             alpha += Math.PI;

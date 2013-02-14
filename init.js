@@ -79,6 +79,7 @@ function init() {
     sphere = new THREE.Mesh(new THREE.SphereGeometry(20, 20, 10), mat);
     sphere.position.z = -150;
     sphere.position.x = -50;
+    sphere.updateMatrix();
     sphere.name = "factory";
     scene.add(sphere);
         stats = new Stats();
@@ -95,6 +96,7 @@ function init() {
             mesh1.position.x = Math.random() * 1000 - 500;
             mesh1.position.z = Math.random() * 1000 - 500;
 //            mesh1.geometry.boundingSphere.radius = 10;
+            mesh1.updateMatrix();
             mesh1.name = "sphere";
             scene.add( mesh1 );
 
@@ -104,6 +106,7 @@ function init() {
             mesh2.position.x = mesh1.position.x;
             mesh2.position.z = mesh1.position.z;
 //            mesh1.geometry.boundingSphere.radius=10;
+            mesh2.updateMatrix();
             mesh2.name = "sphere";
             scene.add( mesh2 );
         });
@@ -191,7 +194,7 @@ function render() {
     for (var index in scene.children) {
         mouseX += 1;
         var object = scene.children[index];
-        object.updateMatrix();
+//        object.updateMatrix();
 
         if (true === controls.CheckCollisionWithCamera(object)) {
             collision = true;
@@ -204,6 +207,10 @@ function render() {
         controls.controlSet(true);
     }
         scan.update(delta_time);
+
+if (document.getElementById( "val_left" )){
+    document.getElementById( "val_left" ).innerHTML = controls.vv;
+}
 
     renderer.clear();
     composer.render();

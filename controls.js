@@ -186,17 +186,16 @@ this.vv=0;
 
         if (scope.enabled === false)
             return;
-        if (enableContols === false) {
-            this.move();
-//            moveForward = false;
-//            moveBackward = false;
-            return;
-        }
+
 // торможения
         velocity.x += (-velocity.x) * accelStop * delta; // уменьшение скорости = торможение X
         velocity.z += (-velocity.z) * accelStop * delta; // уменьшение скорости = торможение Z
         velocityYaw += (-velocityYaw) * accelYawStop * delta;
 
+        if (enableContols === false) {
+            this.move();
+            return;
+        }
 // ускорения
         if (moveForward)
             velocity.z -= accelMove * delta; // увеличение скорости = движение вперёд
@@ -259,14 +258,10 @@ this.vv=0;
 
         vRadius.sub(objPos, camPos);
         dir = this.GetVelocity();
-        if (true){//dir.lengthSq() < 1) {
-            dir = new THREE.Vector3(0, 0, -1);
-//            dir = 
-                    camObj.localToWorld(dir);
-        } else {
-            dir.normalize();
-            camObj.localToWorld(dir);//dir меняется!
-        }
+        dir.y = camPos.y;
+        //dir.normalize();
+        camObj.localToWorld(dir);//dir меняется!
+
         dir.subSelf(camPos);
         dir.y = 0;//работаем в лоскости XZ
 
@@ -279,10 +274,6 @@ this.vv=0;
             alpha=alpha;
         }
 
-        var pointCol = vRadiusNorm.clone();
-        pointCol.addScalar(camRadius);
-        pointCol.y = 0.5;
-        pointCol.addSelf(camPos);
         UTILS.lookTo(0, camPos, vRadius);
         UTILS.lookTo(3, camPos, vRadius);
         UTILS.lines[3].rotation.y += Math.PI / 2;
@@ -305,7 +296,7 @@ this.vv=alpha;
     };
     this.CheckCollisionWithCamera = function(obj) {
 
-        if (obj.geometry && obj.geometry.boundingSphere.radius < 90) {// instanceof THREE.Mesh){
+        if (obj.geometry && obj.geometry.boundingSphere.radius < 90 && obj.geometry.boundingSphere.radius > 5) {// instanceof THREE.Mesh){
 
             var camPos = camera.parent.matrix.getPosition().clone();//position.clone();
 

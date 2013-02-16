@@ -6,11 +6,11 @@ var SCREEN_HEIGHT = window.innerHeight;
 
 var container, stats;
 
-var camera, scene, renderer, geometry, terrain, meterial_g, scan;
+var camera, scene, renderer, geometry, terrain, meterial_g;
 
 var PointLight;
 
-var scan;
+var scan, bibutats;
 
 var num = 0;
 
@@ -74,16 +74,17 @@ function init() {
     }
 
     terrain = new terrain(scene, maxAnisotropy);
+    terrain.MakeBiburats();
 
-      var mat = new THREE.MeshLambertMaterial({color: 0xffffff, shading: THREE.FlatShading, overdraw: true});
+    var mat = new THREE.MeshLambertMaterial({color: 0xffffff, shading: THREE.FlatShading, overdraw: true});
     sphere = new THREE.Mesh(new THREE.SphereGeometry(20, 20, 10), mat);
     sphere.position.z = -150;
     sphere.position.x = -50;
     sphere.updateMatrix();
     sphere.name = "factory";
     scene.add(sphere);
-        stats = new Stats();
-        container.appendChild( stats.domElement );
+    stats = new Stats();
+    container.appendChild( stats.domElement );
     for (var i = 0; i < 20; i++) {
 
         loader = new THREE.JSONLoader();
@@ -111,7 +112,7 @@ function init() {
             scene.add( mesh2 );
         });
     }
-
+    
     // RENDERER
 
     renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -163,11 +164,6 @@ function init() {
 
 }
 
-        
-       
-
-
-
 function animate() {
 
     requestAnimationFrame(animate);
@@ -194,7 +190,6 @@ function render() {
     for (var index in scene.children) {
         mouseX += 1;
         var object = scene.children[index];
-//        object.updateMatrix();
 
         if (true === controls.CheckCollisionWithCamera(object)) {
             collision = true;

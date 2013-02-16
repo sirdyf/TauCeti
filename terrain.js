@@ -43,7 +43,7 @@ function terrain(scene, anisotropy)  {
             fog: false,
             wireframe: false,
             map: texture2
-        })
+        });
             
 //        var material2 = new THREE.MeshLambertMaterial( { 
 //            //alphaTest: 0.5,

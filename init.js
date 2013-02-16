@@ -100,16 +100,11 @@ function init() {
             mesh1.updateMatrix();
             mesh1.name = "sphere";
             scene.add( mesh1 );
-
-
-            mesh2 = new THREE.Mesh(geometry, meterial_g);
-            mesh2.rotation.x = Math.PI;
-            mesh2.position.x = mesh1.position.x;
-            mesh2.position.z = mesh1.position.z;
-//            mesh1.geometry.boundingSphere.radius=10;
-            mesh2.updateMatrix();
-            mesh2.name = "sphere";
-            scene.add( mesh2 );
+            var num=UTILS.addLineColor(scene,1,15);
+            UTILS.lines[num-1].position.copy(mesh1.position);
+            UTILS.lines[num-1].scale.z= mesh1.position.distanceTo(sphere.position);
+            UTILS.lines[num-1].updateMatrix();
+            UTILS.lines[num-1].lookAt(sphere.position);
         });
     }
     

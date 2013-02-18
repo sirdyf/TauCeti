@@ -134,4 +134,29 @@ function terrain(scene, anisotropy)  {
             scene.add(sphere);
         }
     };
+    this.InitEnergyLines = function(){
+
+        var i=0,j=0,tmpObj;
+        for(i=0;i<this.energyLines.length-2;i++){
+            for (j=i+1;j<this.energyLines.length-2;j++){
+                var l1=this.energyLines[i].position.distanceToSquared(this.energyLines[j].position);
+                var l2=this.energyLines[i].position.distanceToSquared(this.energyLines[j+1].position);
+                if (l1>l2){
+                    tmpObj=this.energyLines[j];
+                    this.energyLines[j] = this.energyLines[j+1];
+                    this.energyLines[j+1] = tmpObj;
+                    continue;
+                }
+            }
+            this.energyLines[i].nearTower=this.energyLines[i+1];
+        }
+        for(i=0;i<this.energyLines.length-1-1;i++){
+            var num=this.energyLines[i].num;
+            var pos1=this.energyLines[i].position;
+            var pos2=this.energyLines[i+1].position;
+            UTILS.lines[num].scale.z= pos1.distanceTo(pos2);
+            UTILS.lines[num].updateMatrix();
+            UTILS.lines[num].lookAt(pos2);        
+        }
+    };
 }

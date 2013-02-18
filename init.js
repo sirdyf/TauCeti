@@ -75,7 +75,8 @@ function init() {
 
     terrain = new terrain(scene, maxAnisotropy);
     terrain.MakeBiburats();
-
+    terrain.energyLines=[];
+    
     var mat = new THREE.MeshLambertMaterial({color: 0xffffff, shading: THREE.FlatShading, overdraw: true});
     sphere = new THREE.Mesh(new THREE.SphereGeometry(20, 20, 10), mat);
     sphere.position.z = -150;
@@ -83,14 +84,17 @@ function init() {
     sphere.updateMatrix();
     sphere.name = "factory";
     scene.add(sphere);
+    
     stats = new Stats();
     container.appendChild( stats.domElement );
-    for (var i = 0; i < 20; i++) {
 
         loader = new THREE.JSONLoader();
         loader.load('model/fabric.json', function(geometry) {
 
 
+//    sphere.num = UTILS.addLineColor(scene,1,15)-1;
+//    terrain.energyLines.push(sphere);
+    for (var i = 0; i < 20; i++) {
             meterial_g = new THREE.MeshLambertMaterial({color: 0xffffff, shading: THREE.FlatShading, overdraw: true});
 
             mesh1 = new THREE.Mesh(geometry, meterial_g);
@@ -99,14 +103,15 @@ function init() {
 //            mesh1.geometry.boundingSphere.radius = 10;
             mesh1.updateMatrix();
             mesh1.name = "sphere";
+            mesh1.num = UTILS.addLineColor(scene,1,15)-1;
+            UTILS.lines[mesh1.num].position.copy(mesh1.position);
+            UTILS.lines[mesh1.num].updateMatrix();
+            terrain.energyLines.push(mesh1);
             scene.add( mesh1 );
-            var num=UTILS.addLineColor(scene,1,15);
-            UTILS.lines[num-1].position.copy(mesh1.position);
-            UTILS.lines[num-1].scale.z= mesh1.position.distanceTo(sphere.position);
-            UTILS.lines[num-1].updateMatrix();
-            UTILS.lines[num-1].lookAt(sphere.position);
-        });
-    }
+        }
+
+    terrain.InitEnergyLines();
+    });
     
     // RENDERER
 
@@ -150,13 +155,12 @@ function init() {
 
     scene.fireLaser = laser;
 
-    UTILS.addLine(scene);//DEBUG
-    UTILS.addLineColor(scene);//DEBUG
-    UTILS.addLineColor(scene);//DEBUG
-    UTILS.addLine(scene);//DEBUG
+//    UTILS.addLine(scene);//DEBUG
+//    UTILS.addLineColor(scene);//DEBUG
+//    UTILS.addLineColor(scene);//DEBUG
+//    UTILS.addLine(scene);//DEBUG
     
      scan = new scaner(container, scene, controls.getObject(), SCREEN_HEIGHT / 2, SCREEN_HEIGHT / 2);
-
 }
 
 function animate() {
